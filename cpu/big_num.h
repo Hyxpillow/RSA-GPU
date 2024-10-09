@@ -1,13 +1,17 @@
 #pragma once
 #include <utility>
+#define BIG_NUM_CAPACITY 1024
 
-class big_num 
-{
-public:
-    big_num operator*(const big_num& other) const;
-    big_num operator%(const big_num& other) const;
-    big_num operator!=(const big_num& other) const;
-    big_num operator>>(const big_num& other) const;
-    unsigned char* data;
+struct BigNum {
     size_t length;
+    unsigned char data[BIG_NUM_CAPACITY];
+    BigNum();
+    BigNum(unsigned char x);
+    BigNum(const BigNum& x);
 };
+
+
+
+void multiply(const BigNum& num1,
+                const BigNum& num2,
+                BigNum& result);
