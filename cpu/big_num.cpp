@@ -4,15 +4,18 @@
 BigNum::BigNum()
 {
     memset(this->data, 0, BIG_NUM_CAPACITY);
+    this->length = 0;
 }
 BigNum::BigNum(unsigned char x)
 {
     memset(this->data, 0, BIG_NUM_CAPACITY);
     this->data[0] = x;
+    this->length = 1;
 }
 BigNum::BigNum(const BigNum &x)
 {
     memcpy(this->data, x.data, BIG_NUM_CAPACITY);
+    this->length = x.length;
 }
 
 void multiply(const BigNum &num1,
@@ -35,5 +38,10 @@ void multiply(const BigNum &num1,
         }
 
         result.data[i + num2.length] += carry;
+    }
+    result.length = BIG_NUM_CAPACITY;
+    while (result.data[result.length - 1] == 0)
+    {
+        result.length--;
     }
 }
