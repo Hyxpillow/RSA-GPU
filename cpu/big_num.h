@@ -26,5 +26,5 @@ void mod(const BigNum& Dividend,
             BigNum& remainder);
 
 void subtract(const BigNum& a, const BigNum& b, BigNum& result);
-void shiftRight(BigNum &num);
+void shiftLeft(BigNum &num);
 int compare(const BigNum& a, const BigNum& b);
