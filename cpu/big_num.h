@@ -11,7 +11,7 @@ struct BigNum {
     BigNum(const std::string &numStr);
 
     void convertFromDecimalString(const std::string &numStr);
-    uint64_t toDecimal();
+    uint64_t toDecimal() const;
 
     BigNum& operator=(const BigNum &other);
 };

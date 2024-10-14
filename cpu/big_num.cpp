@@ -84,12 +84,9 @@ void modulo(const BigNum &num1, const BigNum &mod, BigNum &result) {
         currentRemainder.data[0] = num1.data[i];
         if (currentRemainder.length == 0 && currentRemainder.data[0] != 0) {
             currentRemainder.length = 1;
-        } else if (currentRemainder.length > 0 || currentRemainder.data[0] != 0) {
-            currentRemainder.length++;
-        }
-        
-        while (compare(currentRemainder, mod) >= 0) {
+        } 
 
+        while (compare(currentRemainder, mod) >= 0) {
             BigNum tempRemainder;
             subtract(currentRemainder, mod, tempRemainder);
             currentRemainder = tempRemainder;
@@ -183,7 +180,7 @@ void BigNum::convertFromDecimalString(const std::string &numStr) {
 }
 
 
-uint64_t BigNum::toDecimal() {
+uint64_t BigNum::toDecimal() const{
     uint64_t result = 0;
     uint64_t base = 1;
     for (size_t i = 0; i < this->length; ++i) {
