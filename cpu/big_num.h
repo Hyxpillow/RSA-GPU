@@ -11,6 +11,7 @@ struct BigNum {
     BigNum(const std::string &numStr);
 
     void convertFromDecimalString(const std::string &numStr);
+    uint64_t toDecimal();
 
     BigNum& operator=(const BigNum &other);
 };
@@ -21,7 +22,7 @@ void multiply(const BigNum& num1,
                 const BigNum& num2,
                 BigNum& result);
 
-void mod(const BigNum& Dividend,
+void modulo(const BigNum& Dividend,
             const BigNum& Divisor,
             BigNum& remainder);
 

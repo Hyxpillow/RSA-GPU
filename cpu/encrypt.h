@@ -1,6 +1,7 @@
 #pragma once
 #include "big_num.h"
 
-BigNum encrypt(const BigNum& msg_const, 
+void encrypt(const BigNum& msg, 
             const BigNum& exp, 
-            const BigNum& mod);
+            const BigNum& mod,
+            BigNum& res);

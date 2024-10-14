@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string.h>
 #include <string>
+#include <vector>
 
 BigNum::BigNum()
 {
@@ -51,7 +52,7 @@ void multiply(const BigNum &num1,
               const BigNum &num2,
               BigNum &result)
 {
-    memset(&result, 0, BIG_NUM_CAPACITY);
+    memset(result.data, 0, BIG_NUM_CAPACITY);
     for (size_t i = 0; i < num1.length; ++i)
     {
         unsigned int carry = 0;
@@ -75,7 +76,7 @@ void multiply(const BigNum &num1,
     }
 }
 
-void mod(const BigNum &num1, const BigNum &mod, BigNum &result) {
+void modulo(const BigNum &num1, const BigNum &mod, BigNum &result) {
     BigNum currentRemainder;
     memset(&currentRemainder, 0, sizeof(BigNum));
     for (int i = num1.length - 1; i >= 0; --i) {
@@ -179,4 +180,15 @@ void BigNum::convertFromDecimalString(const std::string &numStr) {
         // 更新 decimalDigits 为新的商部分
         decimalDigits = std::vector<unsigned char>(newDecimalDigits.begin() + leadingZeros, newDecimalDigits.end());
     }
+}
+
+
+uint64_t BigNum::toDecimal() {
+    uint64_t result = 0;
+    uint64_t base = 1;
+    for (size_t i = 0; i < this->length; ++i) {
+        result += static_cast<uint64_t>(this->data[i]) * base;
+        base <<= 8;
+    }
+    return result;
 }
