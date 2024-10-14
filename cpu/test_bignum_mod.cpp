@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "big_num.h"
+#include "encrypt.h"
 
 
 void printBigNumInBinary(const BigNum &num) {
@@ -12,16 +13,6 @@ void printBigNumInBinary(const BigNum &num) {
         std::cout << byte << " ";
     }
     std::cout << std::endl;  // 打印结束，换行
-}
-
-uint64_t BigNumToDecimal(const BigNum &num) {
-    uint64_t result = 0;
-    uint64_t base = 1;
-    for (size_t i = 0; i < num.length; ++i) {
-        result += static_cast<uint64_t>(num.data[i]) * base;
-        base <<= 8;
-    }
-    return result;
 }
 
 uint64_t referenceMod(uint64_t num1, uint64_t num2) {
@@ -41,8 +32,8 @@ TEST(BigNumTest, SubtractionTest) {
     BigNum expected("9877");
 
 
-    uint64_t actual = BigNumToDecimal(result);
-    uint64_t expected_val = BigNumToDecimal(expected);
+    uint64_t actual = result.toDecimal();
+    uint64_t expected_val = expected.toDecimal();
 
     EXPECT_EQ(actual, expected_val);
 }
@@ -55,25 +46,47 @@ TEST(BigNumTest, ShiftTest) {
 
     BigNum expected("256");
 
-    uint64_t actual = BigNumToDecimal(num);
-    uint64_t expected_val = BigNumToDecimal(expected);
+    uint64_t actual = num.toDecimal();
+    uint64_t expected_val = expected.toDecimal();
 
     EXPECT_EQ(actual, expected_val);
 }
 
 
 TEST(BigNumTest, ModulusTestSmallNumbers) {
-    BigNum num1("12000");
-    BigNum num2("1111");
+    BigNum num1("271");
+    BigNum num2("323");
     BigNum result;
 
-    mod(num1, num2, result);
-    printBigNumInBinary(result);
-    uint64_t actual = BigNumToDecimal(result);
+    modulo(num1, num2, result);
+    uint64_t actual = result.toDecimal();
+    uint64_t expected = num1.toDecimal() % num2.toDecimal();
 
-    uint64_t expected = BigNumToDecimal(num1) % BigNumToDecimal(num2);
-    printBigNumInBinary(BigNum(std::to_string(expected)));
+    EXPECT_EQ(actual, expected);
+}
 
+TEST(BigNumTest, MultiplySmallNumber) {
+    BigNum num1("123");
+    BigNum num2("123");
+    BigNum result;
+
+    multiply(num1, num2, result);
+
+    uint64_t actual = result.toDecimal();
+    uint64_t expected = 15129;
+    EXPECT_EQ(actual, expected);
+}
+
+TEST(EncryptTest, EncryptSmallNumber) {
+    BigNum msg("123");
+    BigNum exp("5");
+    BigNum mod("323");
+    BigNum result;
+
+    encrypt(msg, exp, mod, result);
+
+    uint64_t actual = result.toDecimal();
+    uint64_t expected = 225;
     EXPECT_EQ(actual, expected);
 }
 

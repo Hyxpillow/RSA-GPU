@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string.h>
 #include <string>
+#include <vector>
 
 BigNum::BigNum()
 {
@@ -29,6 +30,14 @@ BigNum& BigNum::operator=(const BigNum &other) {
     return *this;
 }
 
+BigNum& BigNum::operator=(unsigned char x) {
+    memset(this->data, 0, BIG_NUM_CAPACITY);
+    this->data[0] = x;
+    this->length = 1;
+    return *this;
+}
+
+
 BigNum::BigNum(const std::string &numStr) {
     memset(this->data, 0, BIG_NUM_CAPACITY);
     this->length = 0;
@@ -51,7 +60,7 @@ void multiply(const BigNum &num1,
               const BigNum &num2,
               BigNum &result)
 {
-    memset(&result, 0, BIG_NUM_CAPACITY);
+    memset(result.data, 0, BIG_NUM_CAPACITY);
     for (size_t i = 0; i < num1.length; ++i)
     {
         unsigned int carry = 0;
@@ -75,7 +84,7 @@ void multiply(const BigNum &num1,
     }
 }
 
-void mod(const BigNum &num1, const BigNum &mod, BigNum &result) {
+void modulo(const BigNum &num1, const BigNum &mod, BigNum &result) {
     BigNum currentRemainder;
     memset(&currentRemainder, 0, sizeof(BigNum));
     for (int i = num1.length - 1; i >= 0; --i) {
@@ -83,12 +92,9 @@ void mod(const BigNum &num1, const BigNum &mod, BigNum &result) {
         currentRemainder.data[0] = num1.data[i];
         if (currentRemainder.length == 0 && currentRemainder.data[0] != 0) {
             currentRemainder.length = 1;
-        } else if (currentRemainder.length > 0 || currentRemainder.data[0] != 0) {
-            currentRemainder.length++;
-        }
-        
-        while (compare(currentRemainder, mod) >= 0) {
+        } 
 
+        while (compare(currentRemainder, mod) >= 0) {
             BigNum tempRemainder;
             subtract(currentRemainder, mod, tempRemainder);
             currentRemainder = tempRemainder;
@@ -179,4 +185,15 @@ void BigNum::convertFromDecimalString(const std::string &numStr) {
         // 更新 decimalDigits 为新的商部分
         decimalDigits = std::vector<unsigned char>(newDecimalDigits.begin() + leadingZeros, newDecimalDigits.end());
     }
+}
+
+
+uint64_t BigNum::toDecimal() const{
+    uint64_t result = 0;
+    uint64_t base = 1;
+    for (size_t i = 0; i < this->length; ++i) {
+        result += static_cast<uint64_t>(this->data[i]) * base;
+        base <<= 8;
+    }
+    return result;
 }
