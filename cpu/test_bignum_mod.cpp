@@ -3,6 +3,7 @@
 #include <string>
 #include "big_num.h"
 
+
 void printBigNumInBinary(const BigNum &num) {
     // 遍历 num.data 的每个字节，逐字节打印二进制值
     for (size_t i = 0; i < num.length; ++i) {
@@ -28,13 +29,17 @@ uint64_t referenceMod(uint64_t num1, uint64_t num2) {
 }
 
 TEST(BigNumTest, SubtractionTest) {
+
     BigNum num1("10000");
+
     BigNum num2("123");
     BigNum result;
 
     subtract(num1, num2, result);
 
+
     BigNum expected("9877");
+
 
     uint64_t actual = BigNumToDecimal(result);
     uint64_t expected_val = BigNumToDecimal(expected);
@@ -44,7 +49,9 @@ TEST(BigNumTest, SubtractionTest) {
 
 TEST(BigNumTest, ShiftTest) {
     BigNum num("1");
+
     shiftLeft(num);
+
 
     BigNum expected("256");
 
@@ -66,6 +73,7 @@ TEST(BigNumTest, ModulusTestSmallNumbers) {
 
     uint64_t expected = BigNumToDecimal(num1) % BigNumToDecimal(num2);
     printBigNumInBinary(BigNum(std::to_string(expected)));
+
     EXPECT_EQ(actual, expected);
 }
 

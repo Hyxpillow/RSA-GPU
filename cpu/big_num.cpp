@@ -88,6 +88,7 @@ void mod(const BigNum &num1, const BigNum &mod, BigNum &result) {
         }
         
         while (compare(currentRemainder, mod) >= 0) {
+
             BigNum tempRemainder;
             subtract(currentRemainder, mod, tempRemainder);
             currentRemainder = tempRemainder;
@@ -97,12 +98,14 @@ void mod(const BigNum &num1, const BigNum &mod, BigNum &result) {
     while (result.length > 1 && result.data[result.length - 1] == 0) {
         result.length--;
     }
+
 }
 
 
 void subtract(const BigNum &num1, const BigNum &num2, BigNum &result) {
     memset(result.data, 0, BIG_NUM_CAPACITY);
     result.length = 0;
+
     unsigned char borrow = 0;
 
     for (size_t i = 0; i < num1.length; ++i) {
@@ -135,6 +138,7 @@ int compare(const BigNum& a, const BigNum& b) {
     }
     return 0;
 }
+
 
 void shiftLeft(BigNum &num) {
     if (num.length == 0) {
