@@ -30,6 +30,14 @@ BigNum& BigNum::operator=(const BigNum &other) {
     return *this;
 }
 
+BigNum& BigNum::operator=(unsigned char x) {
+    memset(this->data, 0, BIG_NUM_CAPACITY);
+    this->data[0] = x;
+    this->length = 1;
+    return *this;
+}
+
+
 BigNum::BigNum(const std::string &numStr) {
     memset(this->data, 0, BIG_NUM_CAPACITY);
     this->length = 0;

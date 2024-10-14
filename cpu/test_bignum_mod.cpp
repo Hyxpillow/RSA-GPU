@@ -77,9 +77,9 @@ TEST(BigNumTest, MultiplySmallNumber) {
     EXPECT_EQ(actual, expected);
 }
 
-TEST(EncryptTest, DISABLED_EncryptSmallNumber) {
+TEST(EncryptTest, EncryptSmallNumber) {
     BigNum msg("123");
-    BigNum exp("2");
+    BigNum exp("5");
     BigNum mod("323");
     BigNum result;
 

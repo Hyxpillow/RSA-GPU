@@ -14,6 +14,7 @@ struct BigNum {
     uint64_t toDecimal() const;
 
     BigNum& operator=(const BigNum &other);
+    BigNum& operator=(unsigned char x);
 };
 
 
