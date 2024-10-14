@@ -76,36 +76,36 @@ void multiply(const BigNum &num1,
 }
 
 void mod(const BigNum &num1, const BigNum &mod, BigNum &result) {
-    BigNum currentRemainder; 
-    memset(&result, 0, BIG_NUM_CAPACITY);
-
+    BigNum currentRemainder;
+    memset(&currentRemainder, 0, sizeof(BigNum));
     for (int i = num1.length - 1; i >= 0; --i) {
-        shiftRight(currentRemainder);
+        shiftLeft(currentRemainder);
         currentRemainder.data[0] = num1.data[i];
         if (currentRemainder.length == 0 && currentRemainder.data[0] != 0) {
             currentRemainder.length = 1;
-        } else {
+        } else if (currentRemainder.length > 0 || currentRemainder.data[0] != 0) {
             currentRemainder.length++;
         }
         
+        while (compare(currentRemainder, mod) >= 0) {
 
-        while (compare(currentRemainder, mod) > 0) {
             BigNum tempRemainder;
             subtract(currentRemainder, mod, tempRemainder);
             currentRemainder = tempRemainder;
         }
     }
     result = currentRemainder;
-
-    while (result.length > 1 && result.data[result.length - 1] == '0') {
+    while (result.length > 1 && result.data[result.length - 1] == 0) {
         result.length--;
     }
-    std::cout << "result.length: " << result.length << std::endl;
+
 }
 
 
 void subtract(const BigNum &num1, const BigNum &num2, BigNum &result) {
     memset(result.data, 0, BIG_NUM_CAPACITY);
+    result.length = 0;
+
     unsigned char borrow = 0;
 
     for (size_t i = 0; i < num1.length; ++i) {
@@ -139,15 +139,16 @@ int compare(const BigNum& a, const BigNum& b) {
     return 0;
 }
 
-void shiftRight(BigNum &num) {
+
+void shiftLeft(BigNum &num) {
     if (num.length == 0) {
-        num.length = 1;
-        num.data[0] = 0;
-    } else {
-        for (size_t i = num.length; i > 0; --i) {
-            num.data[i] = num.data[i - 1];
-        }
-        num.data[0] = 0;
+        return;
+    }
+    for (size_t i = num.length; i > 0; --i) {
+        num.data[i] = num.data[i - 1];
+    }
+    num.data[0] = 0;
+    if (num.length < BIG_NUM_CAPACITY) {
         num.length++;
     }
 }
