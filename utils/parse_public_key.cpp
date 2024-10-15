@@ -2,11 +2,11 @@
 #include "big_num.h"
 #include <vector>
 #include "base64_decode.h"
-#include "parse_asn1_integer.h"
+#include "parse_asn1.h"
 
 std::vector<unsigned char> skip_begin_and_end_maker_public_key(const std::vector<unsigned char>& buffer) {
-    const std::string begin_marker = "-----BEGIN RSA PUBLIC KEY-----";
-    const std::string end_marker = "-----END RSA PUBLIC KEY-----";
+    const std::string begin_marker = "-----BEGIN PUBLIC KEY-----";
+    const std::string end_marker = "-----END PUBLIC KEY-----";
 
     // Convert buffer to string for easier manipulation
     std::string buffer_str(buffer.begin(), buffer.end());
@@ -62,8 +62,13 @@ void parse_public_key(const char* key_file_name,
     std::vector<unsigned char> base64_data = skip_begin_and_end_maker_public_key(key_file_buffer);
     std::vector<unsigned char> key_buffer = base64_decode(base64_data);
 
-    size_t offset = 2;
+    size_t offset = 0;
     
+    skip_asn1_sequence_header(key_buffer, offset);
+    skip_asn1_sequence(key_buffer, offset);
+    skip_asn1_bit_string_header(key_buffer, offset);
+    skip_asn1_sequence_header(key_buffer, offset);
+
     BigNum modulus = parse_asn1_integer(key_buffer, offset);
     BigNum public_exponent = parse_asn1_integer(key_buffer, offset);
 

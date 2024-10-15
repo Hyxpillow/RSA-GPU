@@ -2,11 +2,11 @@
 #include "big_num.h"
 #include <vector>
 #include "base64_decode.h"
-#include "parse_asn1_integer.h"
+#include "parse_asn1.h"
 
 std::vector<unsigned char> skip_begin_and_end_maker_private_key(const std::vector<unsigned char>& buffer) {
-    const std::string begin_marker = "-----BEGIN RSA PRIVATE KEY-----";
-    const std::string end_marker = "-----END RSA PRIVATE KEY-----";
+    const std::string begin_marker = "-----BEGIN PRIVATE KEY-----";
+    const std::string end_marker = "-----END PRIVATE KEY-----";
 
     // Convert buffer to string for easier manipulation
     std::string buffer_str(buffer.begin(), buffer.end());
@@ -41,7 +41,6 @@ std::vector<unsigned char> skip_begin_and_end_maker_private_key(const std::vecto
     return result;
 }
 
-// only for pkcs1
 void parse_private_key(const char* key_file_name, 
                         BigNum& _exponent, 
                         BigNum& _modulus)
@@ -63,7 +62,20 @@ void parse_private_key(const char* key_file_name,
     std::vector<unsigned char> base64_data = skip_begin_and_end_maker_private_key(key_file_buffer);
     std::vector<unsigned char> key_buffer = base64_decode(base64_data);
     
-    size_t offset = 2;
+    size_t offset = 0;
+
+    // PrivateKeyInfo ::= SEQUENCE {
+    //     version                   Version,
+    //     privateKeyAlgorithm       PrivateKeyAlgorithmIdentifier,
+    //     privateKey                PrivateKey,
+    //     attributes           [0]  IMPLICIT Attributes OPTIONAL
+    // }
+    skip_asn1_sequence_header(key_buffer, offset); // SEQUENCE 
+    skip_asn1_integer(key_buffer, offset); // Version
+    skip_asn1_sequence(key_buffer, offset); // PrivateKeyAlgorithmIdentifier
+    skip_asn1_octet_string_header(key_buffer, offset); // PrivateKey
+    skip_asn1_sequence_header(key_buffer, offset); // privateKey
+
     
     BigNum version = parse_asn1_integer(key_buffer, offset);
     BigNum modulus = parse_asn1_integer(key_buffer, offset);
