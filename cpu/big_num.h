@@ -31,3 +31,9 @@ void subtract(const BigNum& a, const BigNum& b, BigNum& result);
 
 void shiftLeft(BigNum &num);
 int compare(const BigNum& a, const BigNum& b);
+
+
+void exponentiate_modulo(const BigNum& msg, 
+            const BigNum& exp, 
+            const BigNum& mod,
+            BigNum& res);

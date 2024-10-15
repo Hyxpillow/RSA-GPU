@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include "big_num.h"
-#include "encrypt.h"
 
 
 void printBigNumInBinary(const BigNum &num) {
