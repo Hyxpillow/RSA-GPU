@@ -6,15 +6,17 @@ struct BigNum {
     size_t length;
     unsigned char data[BIG_NUM_CAPACITY];
     BigNum();
-    BigNum(unsigned char x);
-    BigNum(const BigNum& x);
-    BigNum(const std::string &numStr);
+    BigNum(unsigned char);
+    BigNum(const BigNum&);
+    BigNum(const std::string&);
 
-    void convertFromDecimalString(const std::string &numStr);
+    void convertFromDecimalString(const std::string &);
     uint64_t toDecimal() const;
 
-    BigNum& operator=(const BigNum &other);
-    BigNum& operator=(unsigned char x);
+    std::string toString();
+
+    BigNum& operator=(const BigNum &);
+    BigNum& operator=(unsigned char);
 };
 
 

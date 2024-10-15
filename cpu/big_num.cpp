@@ -3,6 +3,8 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 BigNum::BigNum()
 {
@@ -224,4 +226,13 @@ void exponentiate_modulo(const BigNum& msg,
             modulo(buffer, mod, xxx);
         }
     }
+}
+
+std::string BigNum::toString() {
+    std::stringstream ss;
+    ss << std::uppercase;
+    for (int i = this->length - 1; i >= 0; i--) {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(this->data[i]);
+    }
+    return ss.str();
 }
