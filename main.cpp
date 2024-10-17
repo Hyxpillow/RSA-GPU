@@ -2,6 +2,7 @@
 #include <string.h>
 #include "utils/parse_private_key.h"
 #include "utils/parse_public_key.h"
+#include "utils/pkcs1/pkcs1.h"
 #include "cpu/big_num.h"
 #include "cpu/rsa_cpu.h"
 #include <vector>
@@ -36,9 +37,6 @@ int main(int argc, char *argv[]) {
     printf("Output file: %s\n", output_file_name);
     printf("Processor: %s\n", processor);
 
-    std::vector<BigNum> input_blocks;
-    std::vector<BigNum> output_blocks;
-
     BigNum modulus;
     BigNum exponent;
 
@@ -47,6 +45,15 @@ int main(int argc, char *argv[]) {
     if (strcmp(mode, "private") == 0)
         parse_private_key(key_file_name, exponent, modulus);
 
+    
+    // @param length: module length
+    // @param input_file_name: input file name
+    // @param flag: padding flag 0x01 or 0x02
+    // @return: a vector of BigNums
+    std::vector<BigNum> input_blocks = load_and_pad_file(modulus.length, input_file_name, 0x01);
+    std::vector<BigNum> output_blocks;
+
+    
     if (strcmp(processor, "cpu") == 0)
         rsa_cpu(input_blocks, exponent, modulus, output_blocks);
     // if (strcmp(processor, "gpu") == 0)
