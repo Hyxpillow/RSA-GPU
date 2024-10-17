@@ -1,5 +1,5 @@
 #pragma once
 #include "big_num.h"
 
-
-void parse_private_key(const char*, BigNum&, BigNum&);
+bool is_private_key(std::vector<unsigned char>&);
+void parse_private_key(std::vector<unsigned char>&, BigNum&, BigNum&);

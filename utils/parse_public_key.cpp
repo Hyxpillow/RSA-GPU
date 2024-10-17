@@ -4,6 +4,25 @@
 #include "base64_decode.h"
 #include "parse_asn1.h"
 
+bool is_public_key(std::vector<unsigned char>& buffer)
+{
+    const std::string begin_marker = "-----BEGIN PUBLIC KEY-----";
+    const std::string end_marker = "-----END PUBLIC KEY-----";
+    std::string buffer_str(buffer.begin(), buffer.end());
+
+    size_t begin_pos = buffer_str.find(begin_marker);
+    if (begin_pos == std::string::npos) {
+        std::cerr << "BEGIN marker not found\n";
+        return false;
+    }
+    size_t end_pos = buffer_str.find(end_marker, begin_pos);
+    if (end_pos == std::string::npos) {
+        std::cerr << "END marker not found\n";
+        return false;
+    }
+    return true;
+}
+
 std::vector<unsigned char> skip_begin_and_end_maker_public_key(const std::vector<unsigned char>& buffer) {
     const std::string begin_marker = "-----BEGIN PUBLIC KEY-----";
     const std::string end_marker = "-----END PUBLIC KEY-----";
@@ -41,24 +60,10 @@ std::vector<unsigned char> skip_begin_and_end_maker_public_key(const std::vector
     return result;
 }
 
-void parse_public_key(const char* key_file_name,
+void parse_public_key(std::vector<unsigned char>& key_file_buffer,
                          BigNum& _exponent, 
-                         BigNum& _modulus){
-    
-    FILE *key_file = fopen(key_file_name, "rb");
-    if (!key_file) {
-        perror("Failed to open key file");
-        exit(1);
-    }
-
-    fseek(key_file, 0, SEEK_END);
-    long key_file_size = ftell(key_file);
-    rewind(key_file);
-    
-    std::vector<unsigned char> key_file_buffer(key_file_size);
-    fread(key_file_buffer.data(), 1, key_file_size, key_file);
-    fclose(key_file);
-
+                         BigNum& _modulus)
+{    
     std::vector<unsigned char> base64_data = skip_begin_and_end_maker_public_key(key_file_buffer);
     std::vector<unsigned char> key_buffer = base64_decode(base64_data);
 
