@@ -1,4 +1,4 @@
-file(GLOB UTILS_SRC "*.cpp")
+file(GLOB_RECURSE UTILS_SRC "*.cpp")
 
 add_library(utils_module ${UTILS_SRC})
 

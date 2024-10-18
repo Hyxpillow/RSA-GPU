@@ -147,16 +147,16 @@ std::vector<unsigned char> pkcs1_padding(const std::vector<unsigned char> &data,
     return result;
 }
 
-int main()
-{
-    std::string filename = "./test_data.bin";
-    std::string out_filename = "./test_data_out.bin";
-    size_t modulus_length = 32;
-    // std::vector<BigNum> blocks = load_and_not_pad_file(modulus_length, filename);
-    std::vector<BigNum> blocks = load_and_pad_file(modulus_length, filename, 0x01);
-    std::cout << "Loaded " << blocks.size() << " blocks" << std::endl;
-    std::cout << blocks[0].toString() << std::endl;
-    save_pad_file(modulus_length, out_filename, 0x01, blocks);
-    // save_not_pad_file(modulus_length, out_filename, blocks);
-    return 0;
-}
+// int main()
+// {
+//     std::string filename = "./test_data.bin";
+//     std::string out_filename = "./test_data_out.bin";
+//     size_t modulus_length = 32;
+//     // std::vector<BigNum> blocks = load_and_not_pad_file(modulus_length, filename);
+//     std::vector<BigNum> blocks = load_and_pad_file(modulus_length, filename, 0x01);
+//     std::cout << "Loaded " << blocks.size() << " blocks" << std::endl;
+//     std::cout << blocks[0].toString() << std::endl;
+//     save_pad_file(modulus_length, out_filename, 0x01, blocks);
+//     // save_not_pad_file(modulus_length, out_filename, blocks);
+//     return 0;
+// }

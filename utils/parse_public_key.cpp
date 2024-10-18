@@ -61,8 +61,8 @@ std::vector<unsigned char> skip_begin_and_end_maker_public_key(const std::vector
 }
 
 void parse_public_key(std::vector<unsigned char>& key_file_buffer,
-                         BigNum& _exponent, 
-                         BigNum& _modulus)
+                         BigNum& exponent, 
+                         BigNum& modulus)
 {    
     std::vector<unsigned char> base64_data = skip_begin_and_end_maker_public_key(key_file_buffer);
     std::vector<unsigned char> key_buffer = base64_decode(base64_data);
@@ -74,9 +74,9 @@ void parse_public_key(std::vector<unsigned char>& key_file_buffer,
     skip_asn1_bit_string_header(key_buffer, offset);
     skip_asn1_sequence_header(key_buffer, offset);
 
-    BigNum modulus = parse_asn1_integer(key_buffer, offset);
-    BigNum public_exponent = parse_asn1_integer(key_buffer, offset);
+    modulus = parse_asn1_integer(key_buffer, offset);
+    exponent = parse_asn1_integer(key_buffer, offset);
 
     std::cout << "modulus " << modulus.toString() << std::endl;
-    std::cout << "public_exponent " << public_exponent.toString() << std::endl;
+    std::cout << "public_exponent " << exponent.toString() << std::endl;
 }

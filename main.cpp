@@ -42,6 +42,8 @@ int main(int argc, char *argv[]) {
     BigNum exponent;
     parse_key(key_file_name, exponent, modulus);
 
+    std::cout << "Mudules lenth: " << modulus.length << std::endl;
+
     std::vector<BigNum> input_blocks, output_blocks;
 
     if (strcmp(mode, "encrypt") == 0)
@@ -49,14 +51,14 @@ int main(int argc, char *argv[]) {
     if (strcmp(mode, "decrypt") == 0)
         input_blocks = load_and_not_pad_file(modulus.length, input_file_name);
     
-    if (strcmp(processor, "cpu") == 0)
-        rsa_cpu(input_blocks, exponent, modulus, output_blocks);
-    if (strcmp(processor, "cpu") == 0);
-        1; // rsa_gpu();
+    // if (strcmp(processor, "cpu") == 0)
+    //     rsa_cpu(input_blocks, exponent, modulus, output_blocks);
+    // if (strcmp(processor, "cpu") == 0);
+    //     1; // rsa_gpu();
 
     if (strcmp(mode, "encrypt") == 0)
-        save_not_pad_file(modulus.length, output_file_name, output_blocks);
+        save_not_pad_file(modulus.length, output_file_name, input_blocks);
     if (strcmp(mode, "decrypt") == 0)
-        save_pad_file(modulus.length, output_file_name, 0x01, output_blocks);
+        save_pad_file(modulus.length, output_file_name, 0x01, input_blocks);
     return 0;
 }
