@@ -3,6 +3,8 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 BigNum::BigNum()
 {
@@ -22,6 +24,16 @@ BigNum::BigNum(const BigNum &x)
     this->length = x.length;
 }
 
+BigNum::BigNum(const unsigned char* buffer, size_t length) 
+{
+    memset(this->data, 0, BIG_NUM_CAPACITY);
+    for (size_t i = 0; i < length; i++)
+    {
+        this->data[i] = buffer[length - 1 - i];
+    }
+    this->length = length;
+}
+
 BigNum& BigNum::operator=(const BigNum &other) {
     if (this != &other) {  // 避免自我赋值
         memcpy(this->data, other.data, BIG_NUM_CAPACITY);  // 深拷贝 data 数组
@@ -38,23 +50,25 @@ BigNum& BigNum::operator=(unsigned char x) {
 }
 
 
-BigNum::BigNum(const std::string &numStr) {
-    memset(this->data, 0, BIG_NUM_CAPACITY);
-    this->length = 0;
 
-    size_t start = 0;
-    while (start < numStr.size() && numStr[start] == '0') {
-        start++;
-    }
 
-    if (start == numStr.size()) {
-        this->data[0] = 0;
-        this->length = 1;
-    } else {
-        std::string numPart = numStr.substr(start);
-        convertFromDecimalString(numPart);
-    }
-}
+// BigNum::BigNum(const std::string &numStr) {
+//     memset(this->data, 0, BIG_NUM_CAPACITY);
+//     this->length = 0;
+
+//     size_t start = 0;
+//     while (start < numStr.size() && numStr[start] == '0') {
+//         start++;
+//     }
+
+//     if (start == numStr.size()) {
+//         this->data[0] = 0;
+//         this->length = 1;
+//     } else {
+//         std::string numPart = numStr.substr(start);
+//         convertFromDecimalString(numPart);
+//     }
+// }
 
 void multiply(const BigNum &num1,
               const BigNum &num2,
@@ -196,4 +210,41 @@ uint64_t BigNum::toDecimal() const{
         base <<= 8;
     }
     return result;
+}
+
+void exponentiate_modulo(const BigNum& msg, 
+            const BigNum& exp, 
+            const BigNum& mod,
+            BigNum& res) 
+{
+    if (msg.length == 0)
+    {
+        res = 0;
+        return;
+    }
+    res = 1;
+    BigNum xxx(msg);
+    for (size_t byte_idx = 0; byte_idx < exp.length; byte_idx++) 
+    {
+        BigNum buffer;
+        for (unsigned char bit_mask = 1; bit_mask != 0; bit_mask <<= 1) 
+        {
+            if (exp.data[byte_idx] & bit_mask) 
+            {   
+                multiply(res, xxx, buffer);
+                modulo(buffer, mod, res);
+            }
+            multiply(xxx, xxx, buffer);
+            modulo(buffer, mod, xxx);
+        }
+    }
+}
+
+std::string BigNum::toString() {
+    std::stringstream ss;
+    ss << std::uppercase;
+    for (int i = this->length - 1; i >= 0; i--) {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(this->data[i]);
+    }
+    return ss.str();
 }

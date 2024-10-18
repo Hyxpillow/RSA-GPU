@@ -1,13 +1,10 @@
-cmake_minimum_required(VERSION 3.10)
-project(GTestExample)
+# 查找 cpu 目录中的所有 .cpp 文件，并存储在 CPU_SRC 变量中
+file(GLOB CPU_SRC
+    "*.cpp"  # 匹配当前目录下所有的 .cpp 文件
+)
 
-set(CMAKE_CXX_STANDARD 17)
+# 将所有 cpp 文件编译成一个静态或共享库，命名为 cpu_module
+add_library(cpu_module ${CPU_SRC})
 
-# 添加 Google Test
-find_package(GTest REQUIRED)
-
-# 编译 big_num.cpp
-add_executable(GTestExample test_bignum_mod.cpp big_num.cpp encrypt.cpp)
-
-# 链接 Google Test 和 pthread 库
-target_link_libraries(GTestExample GTest::gtest GTest::gtest_main pthread)
+# 将 cpu 目录添加到库的头文件搜索路径中
+target_include_directories(cpu_module PUBLIC ${CMAKE_SOURCE_DIR}/cpu)
