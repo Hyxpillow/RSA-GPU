@@ -75,6 +75,7 @@ void parse_public_key(std::vector<unsigned char>& key_file_buffer,
     skip_asn1_sequence_header(key_buffer, offset);
 
     modulus = parse_asn1_integer(key_buffer, offset);
+    modulus.length -= 1;
     exponent = parse_asn1_integer(key_buffer, offset);
 
     std::cout << "modulus " << modulus.toString() << std::endl;
