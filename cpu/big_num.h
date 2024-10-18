@@ -8,7 +8,7 @@ struct BigNum {
     BigNum();
     BigNum(unsigned char);
     BigNum(const BigNum&);
-    BigNum(const std::string&);
+    BigNum(const unsigned char*, size_t length);
 
     void convertFromDecimalString(const std::string &);
     uint64_t toDecimal() const;

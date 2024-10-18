@@ -42,26 +42,21 @@ int main(int argc, char *argv[]) {
     BigNum exponent;
     parse_key(key_file_name, exponent, modulus);
 
-    // @param length: module length
-    // @param input_file_name: input file name
-    // @param flag: padding flag 0x01 or 0x02
-    // @return: a vector of BigNums
     std::vector<BigNum> input_blocks, output_blocks;
 
     if (strcmp(mode, "encrypt") == 0)
         input_blocks = load_and_pad_file(modulus.length, input_file_name, 0x01);
-    if (strcmp(mode, "decrypt") == 0);
-        // input_blocks = load_and_not_pad_file()
+    if (strcmp(mode, "decrypt") == 0)
+        input_blocks = load_and_not_pad_file(modulus.length, input_file_name);
     
     if (strcmp(processor, "cpu") == 0)
         rsa_cpu(input_blocks, exponent, modulus, output_blocks);
     if (strcmp(processor, "cpu") == 0);
-        // rsa_gpu();
+        1; // rsa_gpu();
 
-    if (strcmp(mode, "encrypt") == 0);
-        // save output_blocks to file
-    if (strcmp(mode, "decrypt") == 0);
-        // save output_blocks to file (remove padding)
-
+    if (strcmp(mode, "encrypt") == 0)
+        save_not_pad_file(modulus.length, output_file_name, output_blocks);
+    if (strcmp(mode, "decrypt") == 0)
+        save_pad_file(modulus.length, output_file_name, 0x01, output_blocks);
     return 0;
 }

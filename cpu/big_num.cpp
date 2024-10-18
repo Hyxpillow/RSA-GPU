@@ -24,6 +24,16 @@ BigNum::BigNum(const BigNum &x)
     this->length = x.length;
 }
 
+BigNum::BigNum(const unsigned char* buffer, size_t length) 
+{
+    memset(this->data, 0, BIG_NUM_CAPACITY);
+    for (size_t i = 0; i < length; i++)
+    {
+        this->data[i] = buffer[length - 1 - i];
+    }
+    this->length = length;
+}
+
 BigNum& BigNum::operator=(const BigNum &other) {
     if (this != &other) {  // 避免自我赋值
         memcpy(this->data, other.data, BIG_NUM_CAPACITY);  // 深拷贝 data 数组
@@ -40,23 +50,25 @@ BigNum& BigNum::operator=(unsigned char x) {
 }
 
 
-BigNum::BigNum(const std::string &numStr) {
-    memset(this->data, 0, BIG_NUM_CAPACITY);
-    this->length = 0;
 
-    size_t start = 0;
-    while (start < numStr.size() && numStr[start] == '0') {
-        start++;
-    }
 
-    if (start == numStr.size()) {
-        this->data[0] = 0;
-        this->length = 1;
-    } else {
-        std::string numPart = numStr.substr(start);
-        convertFromDecimalString(numPart);
-    }
-}
+// BigNum::BigNum(const std::string &numStr) {
+//     memset(this->data, 0, BIG_NUM_CAPACITY);
+//     this->length = 0;
+
+//     size_t start = 0;
+//     while (start < numStr.size() && numStr[start] == '0') {
+//         start++;
+//     }
+
+//     if (start == numStr.size()) {
+//         this->data[0] = 0;
+//         this->length = 1;
+//     } else {
+//         std::string numPart = numStr.substr(start);
+//         convertFromDecimalString(numPart);
+//     }
+// }
 
 void multiply(const BigNum &num1,
               const BigNum &num2,
