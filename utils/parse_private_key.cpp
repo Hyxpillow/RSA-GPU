@@ -84,6 +84,7 @@ void parse_private_key(std::vector<unsigned char>& key_file_buffer,
     
     BigNum version = parse_asn1_integer(key_buffer, offset);
     BigNum modulus = parse_asn1_integer(key_buffer, offset);
+    modulus.length -= 1;
     BigNum public_exponent = parse_asn1_integer(key_buffer, offset);
     BigNum private_exponent = parse_asn1_integer(key_buffer, offset);
     BigNum prime1 = parse_asn1_integer(key_buffer, offset);
