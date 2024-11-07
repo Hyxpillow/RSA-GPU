@@ -1,6 +1,6 @@
 #include "parse_asn1.h"
 
-BigNum parse_asn1_integer(const std::vector<unsigned char>& buffer, size_t& offset) {
+void parse_asn1_integer(const std::vector<unsigned char>& buffer, size_t& offset, BIGNUM* bn) {
     if (buffer[offset] != 0x02) { // ASN.1 integer type tag is 0x02
         std::cout << "Expected integer ASN.1 tag, got " << std::hex << static_cast<int>(buffer[offset]) << std::endl;
         exit(1);
@@ -10,13 +10,8 @@ BigNum parse_asn1_integer(const std::vector<unsigned char>& buffer, size_t& offs
     get_length_and_num_bytes_for_length(buffer, offset, length, num_bytes_for_length);
 
     offset = offset + 2 + num_bytes_for_length;
-    BigNum res;
-    res.length = length;
-    for (int i = 0; i < res.length; i++) {
-        res.data[i] = buffer[offset + res.length - i - 1];
-    }
-    offset = offset + length; 
-    return res;
+    BN_bin2bn(&buffer[offset], length, bn);
+    offset += length;
 }
 
 void skip_asn1_sequence_header(const std::vector<unsigned char>& buffer, size_t& offset) {

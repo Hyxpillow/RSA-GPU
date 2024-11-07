@@ -1,13 +1,12 @@
 #include "parse_key.h"
 #include <iostream>
-#include "big_num.h"
 #include <vector>
 #include "parse_private_key.h"
 #include "parse_public_key.h"
 
 void parse_key(const char* key_file_name, 
-                BigNum& _exponent, 
-                BigNum& _modulus) {
+                BIGNUM* _exponent, 
+                BIGNUM* _modulus) {
     FILE *key_file = fopen(key_file_name, "rb");
     if (!key_file) {
         perror("Failed to open key file");

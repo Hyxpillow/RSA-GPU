@@ -1,3 +1,3 @@
-#include "big_num.h"
-
-void rsa_cpu(const std::vector<BigNum>&, const BigNum&, const BigNum&, std::vector<BigNum>&);
+#include <openssl/bn.h>
+#include <vector>
+void rsa_cpu(const std::vector<BIGNUM*>&, const BIGNUM*, const BIGNUM*, std::vector<BIGNUM*>&);

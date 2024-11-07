@@ -1,5 +1,5 @@
 #pragma once
-#include "big_num.h"
+#include <openssl/bn.h>
 
 bool is_public_key(std::vector<unsigned char>&);
-void parse_public_key(std::vector<unsigned char>&, BigNum&, BigNum&);
+void parse_public_key(std::vector<unsigned char>&, BIGNUM*, BIGNUM*);

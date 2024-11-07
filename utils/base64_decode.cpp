@@ -2,7 +2,7 @@
 #include <vector>
 #include "base64_decode.h"
 
-static const char base64TableMap[] = {
+static const signed char base64TableMap[] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
