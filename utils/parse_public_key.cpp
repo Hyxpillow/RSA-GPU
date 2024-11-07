@@ -1,8 +1,10 @@
 #include <iostream>
-#include "big_num.h"
+#include <openssl/bn.h>
 #include <vector>
 #include "base64_decode.h"
 #include "parse_asn1.h"
+#include <algorithm>
+#include "print_bignum_verbose.h"
 
 bool is_public_key(std::vector<unsigned char>& buffer)
 {
@@ -12,12 +14,10 @@ bool is_public_key(std::vector<unsigned char>& buffer)
 
     size_t begin_pos = buffer_str.find(begin_marker);
     if (begin_pos == std::string::npos) {
-        std::cerr << "BEGIN marker not found\n";
         return false;
     }
     size_t end_pos = buffer_str.find(end_marker, begin_pos);
     if (end_pos == std::string::npos) {
-        std::cerr << "END marker not found\n";
         return false;
     }
     return true;
@@ -61,8 +61,8 @@ std::vector<unsigned char> skip_begin_and_end_maker_public_key(const std::vector
 }
 
 void parse_public_key(std::vector<unsigned char>& key_file_buffer,
-                         BigNum& exponent, 
-                         BigNum& modulus)
+                         BIGNUM* _exponent, 
+                         BIGNUM* _modulus)
 {    
     std::vector<unsigned char> base64_data = skip_begin_and_end_maker_public_key(key_file_buffer);
     std::vector<unsigned char> key_buffer = base64_decode(base64_data);
@@ -74,10 +74,18 @@ void parse_public_key(std::vector<unsigned char>& key_file_buffer,
     skip_asn1_bit_string_header(key_buffer, offset);
     skip_asn1_sequence_header(key_buffer, offset);
 
-    modulus = parse_asn1_integer(key_buffer, offset);
-    modulus.length -= 1;
-    exponent = parse_asn1_integer(key_buffer, offset);
+    BIGNUM* modulus = BN_new();
+    BIGNUM* public_exponent = BN_new();
 
-    std::cout << "modulus " << modulus.toString() << std::endl;
-    std::cout << "public_exponent " << exponent.toString() << std::endl;
+    parse_asn1_integer(key_buffer, offset, modulus);
+    parse_asn1_integer(key_buffer, offset, public_exponent);
+
+    BN_print_verbose("modulus", modulus);
+    BN_print_verbose("public_exponent", public_exponent);
+
+    BN_copy(_modulus, modulus);
+    BN_copy(_exponent, public_exponent);
+
+    BN_free(modulus);
+    BN_free(public_exponent);
 }

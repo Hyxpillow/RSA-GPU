@@ -1,5 +1,5 @@
-#include "big_num.h"
+#include <openssl/bn.h>
 
 void parse_key(const char* key_file_name, 
-                BigNum& _exponent, 
-                BigNum& _modulus);
+                BIGNUM* _exponent, 
+                BIGNUM* _modulus);

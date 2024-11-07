@@ -1,9 +1,10 @@
 #include "pkcs1.h"
+#include <iomanip>
 
 void save_pad_file(size_t modulus_length,
                    const std::string &filename,
                    unsigned char flag,
-                   const std::vector<BigNum> &output_blocks)
+                   const std::vector<BIGNUM*> &output_blocks)
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -12,29 +13,33 @@ void save_pad_file(size_t modulus_length,
         exit(1);
     }
 
-    for (const BigNum &block : output_blocks)
-    {
-        if (block.data[modulus_length - 1] != 0x00) {
-            perror("padding beginning error");
-            exit(1);
-        }
-        if (block.data[modulus_length - 2] != flag) {
+    unsigned char *buf =(unsigned char*)malloc(1 + modulus_length * sizeof(unsigned char));
+    for (const BIGNUM* block : output_blocks)
+    {   
+        BN_bn2bin(block, buf);
+
+        // if (buf[modulus_length - 1] != 0x00) {
+        //     perror("padding beginning error");
+        //     exit(1);
+        // }
+        if (buf[0] != flag) {
             perror("padding flag error");
             exit(1);
         }
-        int idx_for_data_begin = modulus_length - 3;
-        while (block.data[idx_for_data_begin--] != 0);
-        for (size_t i = 0; i <= idx_for_data_begin; i++) {
-            file.write((const char *)(block.data + idx_for_data_begin - i), 1);
+        int idx_for_data_begin = 1;
+        while (buf[idx_for_data_begin++] != 0);
+
+        for (size_t i = idx_for_data_begin; i < modulus_length - 1; i++) {
+            file.write((const char *)(buf + i), 1);
         }
     }
-
+    free(buf);
     file.close();
 }
 
 void save_not_pad_file(size_t modulus_length,
                        const std::string &filename,
-                       const std::vector<BigNum> &output_blocks)
+                       const std::vector<BIGNUM*> &output_blocks)
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -43,17 +48,20 @@ void save_not_pad_file(size_t modulus_length,
         exit(1);
     }
 
-    for (const BigNum &block : output_blocks)
-    {
+    unsigned char *buf =(unsigned char*)malloc(1 + modulus_length * sizeof(unsigned char));
+    for (const BIGNUM* block : output_blocks)
+    {   
+        BN_bn2bin(block, buf);
         for (size_t i = 0; i < modulus_length; i++) {
-            file.write((const char *)(block.data + modulus_length - 1 - i), 1);
+            file.write((const char*)buf + i, 1);
         }
     }
+    free(buf);
 
     file.close();
 }
 
-std::vector<BigNum> load_and_not_pad_file(size_t modulus_length,
+std::vector<BIGNUM*> load_and_not_pad_file(size_t modulus_length,
                                           const std::string &filename)
 {
     std::ifstream file(filename, std::ios::binary);
@@ -64,7 +72,7 @@ std::vector<BigNum> load_and_not_pad_file(size_t modulus_length,
     }
 
     size_t block_size = modulus_length;
-    std::vector<BigNum> blocks;
+    std::vector<BIGNUM*> blocks;
 
     while (!file.eof())
     {
@@ -74,7 +82,10 @@ std::vector<BigNum> load_and_not_pad_file(size_t modulus_length,
         if (bytes_read > 0)
         {
             block_data.resize(bytes_read);
-            blocks.push_back(BigNum(block_data.data(), block_data.size()));
+
+            BIGNUM *bn = BN_new();
+            BN_bin2bn(block_data.data(), block_data.size(), bn);
+            blocks.push_back(bn);
         }
     }
     
@@ -82,7 +93,7 @@ std::vector<BigNum> load_and_not_pad_file(size_t modulus_length,
     return blocks;
 }
 
-std::vector<BigNum> load_and_pad_file(size_t modulus_length, const std::string &filename, unsigned char flag)
+std::vector<BIGNUM*> load_and_pad_file(size_t modulus_length, const std::string &filename, unsigned char flag)
 {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -98,7 +109,7 @@ std::vector<BigNum> load_and_pad_file(size_t modulus_length, const std::string &
     }
 
     size_t block_size = modulus_length - 11;
-    std::vector<BigNum> blocks;
+    std::vector<BIGNUM*> blocks;
 
     while (!file.eof())
     {
@@ -109,8 +120,10 @@ std::vector<BigNum> load_and_pad_file(size_t modulus_length, const std::string &
         {
             block_data.resize(bytes_read);
             auto padded_data = pkcs1_padding(block_data, modulus_length, flag);
-            blocks.push_back(BigNum(padded_data.data(), padded_data.size()));
-            std::cout << blocks[blocks.size() - 1].length << std::endl;
+
+            BIGNUM *bn = BN_new();
+            BN_bin2bn(padded_data.data(), padded_data.size(), bn);
+            blocks.push_back(bn);
         }
     }
 
@@ -137,13 +150,6 @@ std::vector<unsigned char> pkcs1_padding(const std::vector<unsigned char> &data,
     {
         result[i] = data[i - modulus_length + data.size()];
     }
-
-    // print the result
-    for (size_t i = 0; i < modulus_length; ++i)
-    {
-        std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)result[i] << " ";
-    }
-    std::cout << std::endl;
     return result;
 }
 

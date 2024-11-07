@@ -1,5 +1,6 @@
 #pragma once
-#include "big_num.h"
+#include <openssl/bn.h>
+#include <vector>
 
 bool is_private_key(std::vector<unsigned char>&);
-void parse_private_key(std::vector<unsigned char>&, BigNum&, BigNum&);
+void parse_private_key(std::vector<unsigned char>&, BIGNUM*, BIGNUM*);
