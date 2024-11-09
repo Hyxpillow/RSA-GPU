@@ -40,26 +40,3 @@ public:
     void mont_mul(const BIGNUM* a, const BIGNUM* b, BIGNUM* result);
     void mont_exp(const BIGNUM* base, const BIGNUM* exp, BIGNUM* result);
 };
-
-// 测试类
-class ModExpTester {
-private:
-    BN_CTX* ctx;
-    
-    struct TestCase {
-        std::string base;
-        std::string exp;
-        std::string mod;
-        std::string expected;
-    };
-
-    std::vector<TestCase> test_cases;
-    
-    void run_single_test(const TestCase& test);
-    void run_random_tests(int count);
-
-public:
-    ModExpTester();
-    ~ModExpTester();
-    void run_all_tests();
-};
