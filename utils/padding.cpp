@@ -4,7 +4,7 @@
 void save_pad_file(size_t modulus_length,
                    const std::string &filename,
                    unsigned char flag,
-                   const std::vector<BIGNUM*> &output_blocks)
+                   const std::vector<BIGNUM *> &output_blocks)
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -13,23 +13,22 @@ void save_pad_file(size_t modulus_length,
         exit(1);
     }
 
-    unsigned char *buf =(unsigned char*)malloc(1 + modulus_length * sizeof(unsigned char));
-    for (const BIGNUM* block : output_blocks)
-    {   
+    unsigned char *buf = (unsigned char *)malloc(1 + modulus_length * sizeof(unsigned char));
+    for (const BIGNUM *block : output_blocks)
+    {
         BN_bn2bin(block, buf);
 
-        // if (buf[modulus_length - 1] != 0x00) {
-        //     perror("padding beginning error");
-        //     exit(1);
-        // }
-        if (buf[0] != flag) {
+        if (buf[0] != flag)
+        {
             perror("padding flag error");
             exit(1);
         }
         int idx_for_data_begin = 1;
-        while (buf[idx_for_data_begin++] != 0);
+        while (buf[idx_for_data_begin++] != 0)
+            ;
 
-        for (size_t i = idx_for_data_begin; i < modulus_length - 1; i++) {
+        for (size_t i = idx_for_data_begin; i < modulus_length - 1; i++)
+        {
             file.write((const char *)(buf + i), 1);
         }
     }
@@ -39,7 +38,7 @@ void save_pad_file(size_t modulus_length,
 
 void save_not_pad_file(size_t modulus_length,
                        const std::string &filename,
-                       const std::vector<BIGNUM*> &output_blocks)
+                       const std::vector<BIGNUM *> &output_blocks)
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -48,12 +47,13 @@ void save_not_pad_file(size_t modulus_length,
         exit(1);
     }
 
-    unsigned char *buf =(unsigned char*)malloc(1 + modulus_length * sizeof(unsigned char));
-    for (const BIGNUM* block : output_blocks)
-    {   
+    unsigned char *buf = (unsigned char *)malloc(1 + modulus_length * sizeof(unsigned char));
+    for (const BIGNUM *block : output_blocks)
+    {
         BN_bn2bin(block, buf);
-        for (size_t i = 0; i < modulus_length; i++) {
-            file.write((const char*)buf + i, 1);
+        for (size_t i = 0; i < modulus_length; i++)
+        {
+            file.write((const char *)buf + i, 1);
         }
     }
     free(buf);
@@ -61,8 +61,9 @@ void save_not_pad_file(size_t modulus_length,
     file.close();
 }
 
-std::vector<BIGNUM*> load_and_not_pad_file(size_t modulus_length,
-                                          const std::string &filename)
+void load_and_not_pad_file(size_t modulus_length,
+                           const std::string &filename,
+                           std::vector<BIGNUM *> &input_blocks)
 {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -72,7 +73,6 @@ std::vector<BIGNUM*> load_and_not_pad_file(size_t modulus_length,
     }
 
     size_t block_size = modulus_length;
-    std::vector<BIGNUM*> blocks;
 
     while (!file.eof())
     {
@@ -85,15 +85,17 @@ std::vector<BIGNUM*> load_and_not_pad_file(size_t modulus_length,
 
             BIGNUM *bn = BN_new();
             BN_bin2bn(block_data.data(), block_data.size(), bn);
-            blocks.push_back(bn);
+            input_blocks.push_back(bn);
         }
     }
-    
+
     file.close();
-    return blocks;
 }
 
-std::vector<BIGNUM*> load_and_pad_file(size_t modulus_length, const std::string &filename, unsigned char flag)
+void load_and_pad_file(size_t modulus_length,
+                       const std::string &filename,
+                       unsigned char flag,
+                       std::vector<BIGNUM *> &input_blocks)
 {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -109,7 +111,6 @@ std::vector<BIGNUM*> load_and_pad_file(size_t modulus_length, const std::string 
     }
 
     size_t block_size = modulus_length - 11;
-    std::vector<BIGNUM*> blocks;
 
     while (!file.eof())
     {
@@ -123,12 +124,11 @@ std::vector<BIGNUM*> load_and_pad_file(size_t modulus_length, const std::string 
 
             BIGNUM *bn = BN_new();
             BN_bin2bn(padded_data.data(), padded_data.size(), bn);
-            blocks.push_back(bn);
+            input_blocks.push_back(bn);
         }
     }
 
     file.close();
-    return blocks;
 }
 
 std::vector<unsigned char> pkcs1_padding(const std::vector<unsigned char> &data, size_t modulus_length, unsigned char flag)
@@ -142,7 +142,8 @@ std::vector<unsigned char> pkcs1_padding(const std::vector<unsigned char> &data,
 
     result[0] = 0x00;
     result[1] = flag;
-    for (size_t i = 2; i < modulus_length - data.size() - 1; ++i) {
+    for (size_t i = 2; i < modulus_length - data.size() - 1; ++i)
+    {
         result[i] = 0xff;
     }
     result[modulus_length - data.size() - 1] = 0x00;

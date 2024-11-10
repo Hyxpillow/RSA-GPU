@@ -14,11 +14,14 @@ void save_pad_file(size_t modulus_length,
                    unsigned char flag,
                    const std::vector<BIGNUM*> &output_blocks);
 
-std::vector<BIGNUM*> load_and_not_pad_file(size_t modulus_length,
-                                          const std::string &filename);
-std::vector<BIGNUM*> load_and_pad_file(size_t modulus_length,
-                                      const std::string &filename,
-                                      unsigned char flag);
+void load_and_not_pad_file(size_t modulus_length,
+                           const std::string &filename,
+                           std::vector<BIGNUM *> &input_blocks);
+void load_and_pad_file(size_t modulus_length,
+                       const std::string &filename,
+                       unsigned char flag,
+                       std::vector<BIGNUM *> &input_blocks);
+
 std::vector<unsigned char> pkcs1_padding(const std::vector<unsigned char> &data,
                                          size_t modulus_length,
                                          unsigned char flag);
