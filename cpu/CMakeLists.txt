@@ -1,5 +1,5 @@
 # 查找 cpu 目录中的所有 .cpp 文件，并存储在 CPU_SRC 变量中
-file(GLOB CPU_SRC
+file(GLOB_RECURSE CPU_SRC
     "*.cpp"  # 匹配当前目录下所有的 .cpp 文件
 )
 
