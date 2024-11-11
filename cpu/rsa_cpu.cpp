@@ -1,4 +1,6 @@
 #include "rsa_cpu.h"
+#include "utils/obn.h"
+#include "utils/config.h"
 #include "cpu-modexp/modexp.h"
 #include <vector>
 #include <openssl/bn.h>
@@ -19,4 +21,11 @@ void rsa_cpu(const std::vector<BIGNUM*>& input_blocks,
         MontgomeryModExp montgomery_mod_exp(modulus);
         montgomery_mod_exp.mont_exp(input_blocks[i], exponent, output_blocks[i]);
     }
+}
+
+void do_rsa(const std::vector<OURBIGNUM> &input_blocks, 
+            std::vector<OURBIGNUM> &output_blocks, 
+            const BN_CONFIG &bn_config, const ModType type)
+{
+
 }

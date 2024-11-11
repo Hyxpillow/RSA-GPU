@@ -5,6 +5,8 @@
 #include <openssl/rsa.h>
 #include "utils/read_rsa_key.h"
 #include "utils/padding.h"
+#include "utils/config.h"
+#include "utils/obn.h"
 #include "cpu/rsa_cpu.h"
 
 
@@ -36,6 +38,7 @@ int main(int argc, char *argv[])
     const BIGNUM *d = RSA_get0_d(rsa);
     const BIGNUM *exponent = (d != NULL) ? d : e;
 
+    const BN_CONFIG bn_config(modulus);
     std::vector<BIGNUM *> input_blocks, output_blocks;
     if (strcmp(mode, "encrypt") == 0)
     {
