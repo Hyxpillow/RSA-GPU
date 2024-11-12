@@ -13,7 +13,7 @@ void OBN_add(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b);
 void OBN_sub(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b);
 void OBN_mul(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b);
 void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM *d);
-# define OBN_mod(rem,m,d,ctx) OBN_div(NULL,(rem),(m),(d),(ctx))
+# define OBN_mod(dv,rem,m,d) OBN_div((dv),(rem),(m),(d))
 
 int OBN_lshift(OURBIGNUM *r, const OURBIGNUM *a, int n);
 int OBN_rshift(OURBIGNUM *r, const OURBIGNUM *a, int n);
