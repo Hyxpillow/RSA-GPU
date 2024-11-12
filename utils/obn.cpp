@@ -54,8 +54,9 @@ void OBN_mul(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b)
     }
 }
 void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM *d)
-{
-    memset(dv->data, 0, OBN_MAX_NUM_BYTES);
+{   
+    if (dv)
+        memset(dv->data, 0, OBN_MAX_NUM_BYTES);
     memcpy(rem->data, m->data, OBN_MAX_NUM_BYTES);
     // 获取被除数的实际位数（去除前导零）
     int m_bits = OBN_MAX_NUM_BYTES * 8;
@@ -109,7 +110,8 @@ void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM 
                 borrow = (rem->data[j] < temp_d.data[j] + borrow) ? 1 : 0;
                 rem->data[j] = sub & 0xFF;
             }
-            dv->data[i / 8] |= (1 << (i % 8));
+            if (dv)
+                dv->data[i / 8] |= (1 << (i % 8));
         }
 
         // 将除数右移一位，准备处理下一位
@@ -235,3 +237,53 @@ void OBN_obn2hex(const OURBIGNUM *a, char *str)
     str[index] = '\0';
 }
 
+int OBN_num_bits(const OURBIGNUM *a)
+{
+    for (int i = OBN_MAX_NUM_BYTES - 1; i >= 0; --i) {
+        if (a->data[i] != 0) {
+            for (int bit = 7; bit >= 0; --bit) {
+                if (a->data[i] & (1 << bit)) {
+                    return i * 8 + bit + 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+int OBN_is_bit_set(const OURBIGNUM *a, int n)
+{
+    int byte_index = n / 8;
+    int bit_index = n % 8;
+    return (a->data[byte_index] & (1 << bit_index)) != 0;
+}
+void OBN_mod_mul(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OURBIGNUM *m)
+{
+    OURBIGNUM tmp;
+    OBN_mul(&tmp, a, b);
+    OBN_mod(NULL, r, &tmp, m);
+}
+void OBN_copy(OURBIGNUM *a, const OURBIGNUM *b)
+{
+    memcpy(a->data, b->data, OBN_MAX_NUM_BYTES);
+}
+void OBN_mask_bits(OURBIGNUM *a, int n)
+{
+    int byte_index = n / 8;
+    int bit_index = n % 8;
+
+    // Mask the bits in the byte at byte_index
+    if (bit_index != 0) {
+        a->data[byte_index] &= (1 << bit_index) - 1;
+        byte_index++;
+    }
+
+    // Set all bytes after byte_index to 0
+    for (int i = byte_index; i < OBN_MAX_NUM_BYTES; ++i) {
+        a->data[i] = 0;
+    }
+}
+void OBN_one(OURBIGNUM *a)
+{
+    memset(a->data, 0, OBN_MAX_NUM_BYTES);
+    a->data[0] = 1;
+}

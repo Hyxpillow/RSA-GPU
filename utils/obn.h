@@ -26,3 +26,10 @@ void OBN_bn2obn(OURBIGNUM *a, const BIGNUM* b);
 
 void OBN_obn2hex(const OURBIGNUM *a, char *str);
 void OBN_hex2obn(OURBIGNUM *a, const char *str);
+
+int OBN_num_bits(const OURBIGNUM *a);
+int OBN_is_bit_set(const OURBIGNUM *a, int n);
+void OBN_mod_mul(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OURBIGNUM *m);
+void OBN_copy(OURBIGNUM *a, const OURBIGNUM *b);
+void OBN_mask_bits(OURBIGNUM *a, int n);
+void OBN_one(OURBIGNUM *a);
