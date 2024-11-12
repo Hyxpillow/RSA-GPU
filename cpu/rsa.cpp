@@ -1,4 +1,4 @@
-#include "rsa_cpu.h"
+#include "rsa.h"
 #include "utils/obn.h"
 #include "utils/config.h"
 #include "cpu-modexp/modexp.h"
