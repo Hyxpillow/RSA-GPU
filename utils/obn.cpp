@@ -5,6 +5,7 @@
 OURBIGNUM* OBN_new()
 {
     OURBIGNUM *r = (OURBIGNUM*)malloc(sizeof(OURBIGNUM));
+    memset(r, 0, sizeof(OURBIGNUM));
     return r;
 }
 void OBN_free(OURBIGNUM* a)

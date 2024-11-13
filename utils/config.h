@@ -18,11 +18,11 @@ private:
     void computeNPrime();
     void cleanup();
 public:
-    OURBIGNUM N;
-    OURBIGNUM R;
-    OURBIGNUM R2;
-    OURBIGNUM N_;
-    OURBIGNUM E;
+    OURBIGNUM* N;
+    OURBIGNUM* R;
+    OURBIGNUM* R2;
+    OURBIGNUM* N_;
+    OURBIGNUM* E;
     int k; // 模数的位长
 
     explicit BN_CONFIG(const BIGNUM* modulus, const BIGNUM* e);

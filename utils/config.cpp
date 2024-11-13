@@ -38,12 +38,18 @@ BN_CONFIG::BN_CONFIG(const BIGNUM* modulus, const BIGNUM* e) {
         // 计算N' = -N^(-1) mod R
         computeNPrime();
 
+        N  = OBN_new();
+        R  = OBN_new();
+        R2 = OBN_new();
+        N_ = OBN_new();
+        E  = OBN_new();
+
         // 将BIGNUM转换为OURBIGNUM
-        OBN_bn2obn(&N, _N);
-        OBN_bn2obn(&R, _R);
-        OBN_bn2obn(&R2, _R2);
-        OBN_bn2obn(&N_, _N_);
-        OBN_bn2obn(&E, _E);
+        OBN_bn2obn(N, _N);
+        OBN_bn2obn(R, _R);
+        OBN_bn2obn(R2, _R2);
+        OBN_bn2obn(N_, _N_);
+        OBN_bn2obn(E, _E);
 }
 
 BN_CONFIG::~BN_CONFIG() {
@@ -57,6 +63,12 @@ void BN_CONFIG::cleanup() {
     if (_R2) BN_free(_R2);
     if (_N_) BN_free(_N_);
     if (_E) BN_free(_E);
+
+    if (N) OBN_free(N);
+    if (R) OBN_free(R);
+    if (R2) OBN_free(R2);
+    if (N_) OBN_free(N_);
+    if (E) OBN_free(E);
 }
 
 void BN_CONFIG::computeNPrime() {
