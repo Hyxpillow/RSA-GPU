@@ -13,7 +13,8 @@ void REDC(OURBIGNUM* T, OURBIGNUM* result, const BN_CONFIG& bn_config) {
     // t = (T + mN) / R
     OBN_mul(tmp, m, bn_config.N);
     OBN_add(t, T, tmp);
-    OBN_rshift(t, t, bn_config.k);
+    OBN_rshift(tmp, t, bn_config.k);
+    OBN_copy(t, tmp);
 
     if (OBN_cmp(t, bn_config.N) >= 0) {
         OBN_sub(result, t, bn_config.N);
@@ -51,30 +52,34 @@ void mont_mod_exp(OURBIGNUM* r,
                   const OURBIGNUM* a, 
                   const OURBIGNUM* p, 
                   const BN_CONFIG& bn_config) 
-{
-        OURBIGNUM *mont_base = OBN_new();
-        toMontgomeryForm(a, mont_base, bn_config);
+{       
+    OURBIGNUM *mont_base = OBN_new();
+    toMontgomeryForm(a, mont_base, bn_config);    
 
-        // 初始化结果为1的Montgomery形式
-        // BIGNUM *mont_result = BN_new();
-        // BN_one(mont_result);
-        OURBIGNUM *mont_result = OBN_new();
-        OBN_one(mont_result);
-        toMontgomeryForm(mont_result, mont_result, bn_config);
+    // 初始化结果为1的Montgomery形式
+    // BIGNUM *mont_result = BN_new();
+    // BN_one(mont_result);
+    OURBIGNUM *mont_result = OBN_new();
+    OBN_one(mont_result);
+    toMontgomeryForm(mont_result, mont_result, bn_config);
+    
 
-        // 按位进行幂运算
-        for (int i = OBN_num_bits(p) - 1; i >= 0; i--)
+    // 按位进行幂运算
+    for (int i = OBN_num_bits(p) - 1; i >= 0; i--)
+    {
+        // 平方
+        mont_mul(mont_result, mont_result, mont_result, bn_config);
+
+        // 如果当前位为1，乘以底数
+        if (OBN_is_bit_set(p, i))
         {
-            // 平方
-            mont_mul(mont_result, mont_result, mont_result, bn_config);
-
-            // 如果当前位为1，乘以底数
-            if (OBN_is_bit_set(p, i))
-            {
-                mont_mul(mont_result, mont_base, mont_result, bn_config);
-            }
+            mont_mul(mont_result, mont_base, mont_result, bn_config);
         }
+    }
 
-        // 转换结果回普通域
-        fromMontgomeryForm(mont_result, r, bn_config);
+    // 转换结果回普通域
+    fromMontgomeryForm(mont_result, r, bn_config);
+
+    OBN_free(mont_base);
+    OBN_free(mont_result);
 }

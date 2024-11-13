@@ -42,13 +42,13 @@ int main(int argc, char *argv[])
     if (strcmp(mode, "encrypt") == 0)
     {
         load_and_pad_file(BN_num_bytes(modulus), input_file_name, 0x01, input_blocks);
-        do_rsa(input_blocks, output_blocks, bn_config, BASE);
+        do_rsa(input_blocks, output_blocks, bn_config, Montgomery_CPU);
         save_not_pad_file(BN_num_bytes(modulus), output_file_name, output_blocks);
     }
     else if (strcmp(mode, "decrypt") == 0)
     {
         load_and_not_pad_file(BN_num_bytes(modulus), input_file_name, input_blocks);
-        do_rsa(input_blocks, output_blocks, bn_config, BASE);
+        do_rsa(input_blocks, output_blocks, bn_config, Montgomery_CPU);
         save_pad_file(BN_num_bytes(modulus), output_file_name, 0x01, output_blocks);
     }
     RSA_free(rsa);

@@ -25,6 +25,7 @@ void do_rsa(const std::vector<BIGNUM*> &input_blocks,
             ;
         }
         OBN_obn2bn(&output_block, output_block_obn);
+        printf("%s\n", output_block);
         output_blocks.push_back(output_block);
     }
 }
