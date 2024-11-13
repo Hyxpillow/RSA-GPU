@@ -7,7 +7,7 @@
 #include <vector>
 #include "obn.h"
 class BN_CONFIG {
-private:
+public:
     BN_CTX* ctx;
     BIGNUM* _N;    // 模数
     BIGNUM* _R;    // Montgomery基数 R = 2^k

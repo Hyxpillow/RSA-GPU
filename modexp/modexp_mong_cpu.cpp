@@ -21,24 +21,27 @@ void REDC(OURBIGNUM* T, OURBIGNUM* result, const BN_CONFIG& bn_config) {
     } else {
         OBN_copy(result, t);
     }
+
+    OBN_free(tmp);
+    OBN_free(m);
+    OBN_free(t);
 }
 
 void toMontgomeryForm(const OURBIGNUM* a, OURBIGNUM* result, const BN_CONFIG& bn_config) 
 {
     // result = a * R mod N
     OURBIGNUM *tmp = OBN_new();
-    OBN_mod_mul(tmp, a, bn_config.R, bn_config.N);
+    OBN_mod_mul(tmp, a, bn_config.R2, bn_config.N);
     REDC(tmp, result, bn_config);
+    OBN_free(tmp);
 }
 
 void fromMontgomeryForm(const OURBIGNUM* a, OURBIGNUM* result, const BN_CONFIG& bn_config) 
 {
-    // result = a * 1 mod N
-    OURBIGNUM *one = OBN_new();
-    OBN_one(one);
     OURBIGNUM *tmp = OBN_new();
-    OBN_mul(tmp, a, one);
+    OBN_copy(tmp, a);
     REDC(tmp, result, bn_config);
+    OBN_free(tmp);
 }
 
 void mont_mul(const OURBIGNUM* a, const OURBIGNUM* b, OURBIGNUM* result, const BN_CONFIG& bn_config) 
@@ -54,16 +57,11 @@ void mont_mod_exp(OURBIGNUM* r,
                   const BN_CONFIG& bn_config) 
 {       
     OURBIGNUM *mont_base = OBN_new();
-    toMontgomeryForm(a, mont_base, bn_config);    
-
+    toMontgomeryForm(a, mont_base, bn_config);
     // 初始化结果为1的Montgomery形式
-    // BIGNUM *mont_result = BN_new();
-    // BN_one(mont_result);
     OURBIGNUM *mont_result = OBN_new();
     OBN_one(mont_result);
     toMontgomeryForm(mont_result, mont_result, bn_config);
-    
-
     // 按位进行幂运算
     for (int i = OBN_num_bits(p) - 1; i >= 0; i--)
     {
@@ -79,7 +77,6 @@ void mont_mod_exp(OURBIGNUM* r,
 
     // 转换结果回普通域
     fromMontgomeryForm(mont_result, r, bn_config);
-
     OBN_free(mont_base);
     OBN_free(mont_result);
 }

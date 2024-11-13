@@ -1,4 +1,4 @@
-#include "utils/obn.h"
+#include "modexp_base.h"
 
 void base_mod_exp(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m)
 {

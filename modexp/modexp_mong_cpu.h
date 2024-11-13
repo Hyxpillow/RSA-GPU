@@ -1,6 +1,6 @@
 #pragma once
-#include "utils/obn.h"
-#include "utils/config.h"
+#include "obn.h"
+#include "config.h"
 
 void REDC(OURBIGNUM* T, OURBIGNUM* result, const BN_CONFIG* bn_config);
 void toMontgomeryForm(const OURBIGNUM* a, OURBIGNUM* result, const BN_CONFIG& bn_config);
