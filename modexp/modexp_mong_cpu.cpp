@@ -1,5 +1,4 @@
-#include "utils/config.h"
-#include "utils/obn.h"
+#include "modexp_mong_cpu.h"
 #include <iostream>
 
 void REDC(OURBIGNUM& T, OURBIGNUM& result, const BN_CONFIG& bn_config) {
@@ -7,7 +6,7 @@ void REDC(OURBIGNUM& T, OURBIGNUM& result, const BN_CONFIG& bn_config) {
     OURBIGNUM m;
     OURBIGNUM t;
     OBN_mask_bits(&tmp, bn_config.k);
-    OBN_mod_mul(&m, &tmp, bn_config.N_, bn_config.R);
+    OBN_mod_mul(&m, &tmp, &bn_config.N_, &bn_config.R);
 
     // t = (T + mN) / R
     OBN_mul(&tmp, &m, &bn_config.N);
@@ -33,7 +32,7 @@ void fromMontgomeryForm(const OURBIGNUM& a, OURBIGNUM& result, const BN_CONFIG& 
 {
     // result = a * 1 mod N
     OURBIGNUM one;
-    OBN_set_byte(&one, 1);
+    OBN_one(&one);
     OURBIGNUM tmp;
     OBN_mul(&tmp, &a, &one);
     REDC(tmp, result, bn_config);
@@ -59,17 +58,18 @@ void mont_mod_exp(const OURBIGNUM& base,
         // 初始化结果为1的Montgomery形式
         // BIGNUM *mont_result = BN_new();
         // BN_one(mont_result);
-        OURBIGNUM mont_result = 1;
+        OURBIGNUM mont_result;
+        OBN_one(&mont_result);
         toMontgomeryForm(mont_result, mont_result, bn_config);
 
         // 按位进行幂运算
-        for (int i = BN_num_bits(exp) - 1; i >= 0; i--)
+        for (int i = OBN_num_bits(&exp) - 1; i >= 0; i--)
         {
             // 平方
             mont_mul(mont_result, mont_result, mont_result, bn_config);
 
             // 如果当前位为1，乘以底数
-            if (BN_is_bit_set(exp, i))
+            if (OBN_is_bit_set(&exp, i))
             {
                 mont_mul(mont_result, mont_base, mont_result, bn_config);
             }

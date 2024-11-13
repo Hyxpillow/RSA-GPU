@@ -2,7 +2,7 @@
 #include "obn.h"
 #include <iostream>
 #include <cassert>
-BN_CONFIG::BN_CONFIG(const BIGNUM* modulus) {
+BN_CONFIG::BN_CONFIG(const BIGNUM* modulus, const BIGNUM* e) {
         ctx = BN_CTX_new();
         if (ctx == nullptr)
         {
@@ -10,10 +10,11 @@ BN_CONFIG::BN_CONFIG(const BIGNUM* modulus) {
         }
 
         // 分配内存
-        _N = BN_new();
-        _R = BN_new();
+        _N  = BN_new();
+        _R  = BN_new();
         _R2 = BN_new();
         _N_ = BN_new();
+        _E  = BN_new();
 
         if (!_N || !_R || !_R2 || !_N_)
         {
@@ -22,6 +23,7 @@ BN_CONFIG::BN_CONFIG(const BIGNUM* modulus) {
 
         // 复制模数
         BN_copy(_N, modulus);
+        BN_copy(_E, e);
 
         // 计算k：N的位长
         k = BN_num_bits(_N);
@@ -41,6 +43,7 @@ BN_CONFIG::BN_CONFIG(const BIGNUM* modulus) {
         OBN_bn2obn(&R, _R);
         OBN_bn2obn(&R2, _R2);
         OBN_bn2obn(&N_, _N_);
+        OBN_bn2obn(&E, _E);
 }
 
 BN_CONFIG::~BN_CONFIG() {
@@ -53,6 +56,7 @@ void BN_CONFIG::cleanup() {
     if (_R) BN_free(_R);
     if (_R2) BN_free(_R2);
     if (_N_) BN_free(_N_);
+    if (_E) BN_free(_E);
 }
 
 void BN_CONFIG::computeNPrime() {
