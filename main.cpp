@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 6)
     {
-        printf("Usage: program <encrypt|decrypt> <keyfile> <inputfile> <outputfile> <gpu|cpu>\n");
+        printf("Usage: program <encrypt|decrypt> <keyfile> <inputfile> <outputfile> <cpu|cpu_mont|gpu_mont>\n");
         return 1;
     }
     char *mode = argv[1];
@@ -24,10 +24,11 @@ int main(int argc, char *argv[])
 
     if (strcmp(mode, "encrypt") != 0 &&
             strcmp(mode, "decrypt") != 0 ||
-        strcmp(processor, "gpu") != 0 &&
-            strcmp(processor, "cpu") != 0)
+        strcmp(processor, "cpu") != 0 &&
+            strcmp(processor, "cpu_mont") != 0 &&
+        strcmp(processor, "gpu_mont") != 0)
     {
-        printf("Usage: program <encrypt|decrypt> <keyfile> <inputfile> <outputfile> <gpu|cpu>\n");
+        printf("Usage: program <encrypt|decrypt> <keyfile> <inputfile> <outputfile> <cpu|cpu_mont|gpu_mont>\n");
         return 1;
     }
 
@@ -42,13 +43,13 @@ int main(int argc, char *argv[])
     if (strcmp(mode, "encrypt") == 0)
     {
         load_and_pad_file(BN_num_bytes(modulus), input_file_name, 0x01, input_blocks);
-        do_rsa(input_blocks, output_blocks, bn_config, Montgomery_CPU);
+        do_rsa(input_blocks, output_blocks, bn_config, processor);
         save_not_pad_file(BN_num_bytes(modulus), output_file_name, output_blocks);
     }
     else if (strcmp(mode, "decrypt") == 0)
     {
         load_and_not_pad_file(BN_num_bytes(modulus), input_file_name, input_blocks);
-        do_rsa(input_blocks, output_blocks, bn_config, Montgomery_CPU);
+        do_rsa(input_blocks, output_blocks, bn_config, processor);
         save_pad_file(BN_num_bytes(modulus), output_file_name, 0x01, output_blocks);
     }
     RSA_free(rsa);

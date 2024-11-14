@@ -2,8 +2,8 @@
 
 # Gather all .cpp and .cu files in the modexp directory
 set(SOURCES
-    modexp_mong_cpu.cpp
-    modexp_base.cpp
+    modexp_cpu_mont.cpp
+    modexp_cpu.cpp
 )
 
 add_library(modexp_module ${SOURCES})
