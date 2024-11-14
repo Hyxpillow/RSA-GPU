@@ -5,8 +5,9 @@
 #include <openssl/rsa.h>
 #include "utils/read_rsa_key.h"
 #include "utils/padding.h"
-#include "cpu/rsa_cpu.h"
-
+#include "utils/config.h"
+#include "utils/obn.h"
+#include "rsa.h"
 
 int main(int argc, char *argv[])
 {
@@ -36,17 +37,18 @@ int main(int argc, char *argv[])
     const BIGNUM *d = RSA_get0_d(rsa);
     const BIGNUM *exponent = (d != NULL) ? d : e;
 
-    std::vector<BIGNUM *> input_blocks, output_blocks;
+    const BN_CONFIG bn_config(modulus, exponent);
+    std::vector<BIGNUM*> input_blocks, output_blocks;
     if (strcmp(mode, "encrypt") == 0)
     {
         load_and_pad_file(BN_num_bytes(modulus), input_file_name, 0x01, input_blocks);
-        rsa_cpu(input_blocks, exponent, modulus, output_blocks);
+        do_rsa(input_blocks, output_blocks, bn_config, Montgomery_CPU);
         save_not_pad_file(BN_num_bytes(modulus), output_file_name, output_blocks);
     }
     else if (strcmp(mode, "decrypt") == 0)
     {
         load_and_not_pad_file(BN_num_bytes(modulus), input_file_name, input_blocks);
-        rsa_cpu(input_blocks, exponent, modulus, output_blocks);
+        do_rsa(input_blocks, output_blocks, bn_config, Montgomery_CPU);
         save_pad_file(BN_num_bytes(modulus), output_file_name, 0x01, output_blocks);
     }
     RSA_free(rsa);

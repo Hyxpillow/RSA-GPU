@@ -14,3 +14,8 @@ Transform pkcs1 to pkcs8
 ```
 openssl pkcs8 -topk8 -in private.pem -out private2.pem -nocrypt
 ```
+
+Compile modexptest
+```
+g++ -o modexptest modexptest.cpp modexp/modexp_mong_cpu.cpp modexp/modexp_base.cpp utils/obn.cpp utils/config.cpp  -I ./modexp -I ./utils/ -lssl -lcrypto
+```

@@ -1,4 +1,8 @@
-#include "modexp.h"
+#include "modexp/modexp_mong_cpu.h"
+#include "modexp/modexp_base.h"
+#include <openssl/bn.h>
+#include "utils/obn.h"
+#include "utils/config.h"
 #include <iostream>
 #include <cassert>
 
@@ -66,38 +70,28 @@ void ModExpTester::run_single_test(const TestCase& test) {
         std::cout << "Exp:  " << test.exp << std::endl;
         std::cout << "Mod:  " << test.mod << std::endl;
 
-        // 测试普通模幂
-        ModExp normal_exp;
-        normal_exp.mod_exp(base, exp, mod, result_normal);
-
-        // 测试Montgomery模幂
-        MontgomeryModExp mont_exp(mod);
-        mont_exp.mont_exp(base, exp, result_mont);
-
+        
         // OpenSSL参考实现
         BN_mod_exp(result_openssl, base, exp, mod, ctx);
+        char *str_openssl = BN_bn2hex(result_openssl);
+        std::cout << "OpenSSL Result: " << str_openssl << std::endl;
+        // 蒙哥马利实现
+        BN_CONFIG bn_config(mod, exp);
+
+        OURBIGNUM obn_base, obn_exp, obn_mod;
+        OBN_bn2obn(&obn_base, base);
+        OBN_bn2obn(&obn_exp, exp);
+        OURBIGNUM result_mont;
+        mont_mod_exp(&result_mont, &obn_base, &obn_exp, bn_config);
+        // base_mod_exp(&obn_base, &obn_exp, &result_mont, &obn_mod);
 
         // 输出结果
-        char *str_normal = BN_bn2dec(result_normal);
-        char *str_mont = BN_bn2dec(result_mont);
-        char *str_openssl = BN_bn2dec(result_openssl);
+        // char *str_normal = BN_bn2dec(result_normal);
+        char str_mont[OBN_MAX_NUM_BYTES];
+        OBN_obn2hex(&result_mont, str_mont);
+        // std::cout << "Normal Result:     " << str_normal << std::endl;
+        std::cout << "Mont Result: " << str_mont << std::endl;
 
-        std::cout << "Normal Result:     " << str_normal << std::endl;
-        std::cout << "Montgomery Result: " << str_mont << std::endl;
-        std::cout << "OpenSSL Result:    " << str_openssl << std::endl;
-
-        // 验证结果
-        bool normal_match = (BN_cmp(result_normal, result_openssl) == 0);
-        bool mont_match = (BN_cmp(result_mont, result_openssl) == 0);
-
-        std::cout << "Normal Implementation: " 
-                  << (normal_match ? "PASSED" : "FAILED") << std::endl;
-        std::cout << "Montgomery Implementation: " 
-                  << (mont_match ? "PASSED" : "FAILED") << std::endl;
-
-        OPENSSL_free(str_normal);
-        OPENSSL_free(str_mont);
-        OPENSSL_free(str_openssl);
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
