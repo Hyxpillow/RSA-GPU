@@ -68,6 +68,8 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
     cudaMemcpy((void *)(ctx->b), b, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
     cudaMemset((void *)(ctx->buf), 0, sizeof(int) * OBN_MAX_NUM_BYTES);
 
+    int carry_zero_flag;
+
     dim3 blockSize(16, 16);
     dim3 gridSize(8, 8);
     multiply_kernel<<<gridSize, blockSize>>>(ctx);
@@ -81,7 +83,8 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
     cudaMemcpy((void *)(ctx->carry), ctx->mid8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
     is_carry_all_zero<<<8, 32>>>(ctx);
     cudaDeviceSynchronize();
-    while (ctx->carry_zero_flag)
+    cudaMemcpy(&carry_zero_flag, ctx->carry_zero_flag, sizeof(int), cudaMemcpyDeviceToHost);
+    while (carry_zero_flag)
     {
         cudaMemcpy((void *)(ctx->x), ctx->low8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
         cudaMemcpy((void *)(ctx->y), ctx->carry, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
@@ -93,12 +96,14 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
 
         is_carry_all_zero<<<8, 32>>>(ctx);
         cudaDeviceSynchronize();
+        cudaMemcpy(&carry_zero_flag, ctx->carry_zero_flag, sizeof(int), cudaMemcpyDeviceToHost);
     }
     
     // if carry16 != 0
     cudaMemcpy((void *)(ctx->carry), ctx->high8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
     is_carry_all_zero<<<8, 32>>>(ctx);
     cudaDeviceSynchronize();
+    cudaMemcpy(&carry_zero_flag, ctx->carry_zero_flag, sizeof(int), cudaMemcpyDeviceToHost);
     while (ctx->carry_zero_flag)
     {
         cudaMemcpy((void *)(ctx->x), ctx->low8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
@@ -111,6 +116,7 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
 
         is_carry_all_zero<<<8, 32>>>(ctx);
         cudaDeviceSynchronize();
+        cudaMemcpy(&carry_zero_flag, ctx->carry_zero_flag, sizeof(int), cudaMemcpyDeviceToHost);
     }
 
     cudaMemcpy((void *)r, (void *)(ctx->result), OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToHost);
