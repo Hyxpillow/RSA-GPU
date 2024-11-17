@@ -43,7 +43,7 @@ __global__ void is_carry_all_zero(OBN_MUL_GPU_CTX* ctx)
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     for (int i = idx; i < OBN_MAX_NUM_BYTES; i += gridDim.x * blockDim.x)
         if (ctx->carry[idx] != 0)
-            atomicExch(&(ctx->carry_zero_flag), 1); 
+            ctx->carry_zero_flag = 1; 
 }
 
 __global__ void add_kernel(OBN_MUL_GPU_CTX* ctx)
@@ -64,7 +64,6 @@ __global__ void add_kernel(OBN_MUL_GPU_CTX* ctx)
 
 void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_GPU_CTX *ctx)
 {
-    int buf[OBN_MAX_NUM_BYTES][OBN_MAX_NUM_BYTES];
     cudaMemcpy((void *)(ctx->a), a, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
     cudaMemcpy((void *)(ctx->b), b, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
     cudaMemset((void *)(ctx->buf), 0, sizeof(int) * OBN_MAX_NUM_BYTES);
