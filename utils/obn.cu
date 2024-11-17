@@ -122,5 +122,5 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
         cudaMemcpy(&carry_zero_flag, (void *)&(ctx->carry_zero_flag), sizeof(int), cudaMemcpyDeviceToHost);
     }
 
-    cudaMemcpy((void *)r, (void *)(ctx->result), OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToHost);
+    cudaMemcpy((void *)r, (void *)(ctx->low8), OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToHost);
 }
