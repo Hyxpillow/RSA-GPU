@@ -1,6 +1,6 @@
 #pragma once
 #include <openssl/bn.h>
-#define OBN_MAX_NUM_BYTES 512
+#define OBN_MAX_NUM_BYTES 1024
 
 struct OURBIGNUM {
     unsigned char data[OBN_MAX_NUM_BYTES];
@@ -33,3 +33,27 @@ void OBN_mod_mul(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OUR
 void OBN_copy(OURBIGNUM *a, const OURBIGNUM *b);
 void OBN_mask_bits(OURBIGNUM *a, int n);
 void OBN_one(OURBIGNUM *a);
+
+struct OBN_MUL_GPU_CTX {
+    unsigned char a[OBN_MAX_NUM_BYTES];
+    unsigned char b[OBN_MAX_NUM_BYTES];
+
+    int buf[OBN_MAX_NUM_BYTES];
+
+    unsigned char low8[OBN_MAX_NUM_BYTES];
+    unsigned char mid8[OBN_MAX_NUM_BYTES];
+    unsigned char high8[OBN_MAX_NUM_BYTES];
+
+    unsigned char x[OBN_MAX_NUM_BYTES];
+    unsigned char y[OBN_MAX_NUM_BYTES];
+    unsigned char z[OBN_MAX_NUM_BYTES];
+    unsigned char carry[OBN_MAX_NUM_BYTES];
+
+    unsigned char result[OBN_MAX_NUM_BYTES];
+
+    int carry_zero_flag;
+};
+
+OBN_MUL_GPU_CTX* OBN_MUL_GPU_CTX_new();
+void OBN_MUL_GPU_CTX_free(OBN_MUL_GPU_CTX*);
+void OBN_mul_gpu(OURBIGNUM *rd, const OURBIGNUM *ad, const OURBIGNUM *bd, OBN_MUL_GPU_CTX *ctx);

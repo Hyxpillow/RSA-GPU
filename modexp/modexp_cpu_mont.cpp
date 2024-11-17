@@ -1,4 +1,4 @@
-#include "modexp_mong_cpu.h"
+#include "modexp_cpu_mont.h"
 #include <iostream>
 
 void REDC(OURBIGNUM* T, OURBIGNUM* result, const BN_CONFIG& bn_config) {

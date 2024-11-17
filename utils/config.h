@@ -28,9 +28,3 @@ public:
     explicit BN_CONFIG(const BIGNUM* modulus, const BIGNUM* e);
     ~BN_CONFIG();
 };
-
-enum ModType {
-    BASE,
-    Montgomery_CPU,
-    Montgomery_GPU
-};

@@ -19,3 +19,8 @@ Compile modexptest
 ```
 g++ -o modexptest modexptest.cpp modexp/modexp_mong_cpu.cpp modexp/modexp_base.cpp utils/obn.cpp utils/config.cpp  -I ./modexp -I ./utils/ -lssl -lcrypto
 ```
+
+Compile 
+```
+nvcc -o project main.cpp rsa.cpp modexp/*.cpp utils/*.cpp utils/*.cu -I ./modexp -I ./utils/ -lssl -lcrypto
+```
