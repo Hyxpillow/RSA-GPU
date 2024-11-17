@@ -15,10 +15,11 @@ void OBN_MUL_GPU_CTX_free(OBN_MUL_GPU_CTX* p)
 
 void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OBN_MUL_GPU_CTX *ctx)
 {
-    cudaMemcpy(&(ctx->ad), a, sizeof(OURBIGNUM), cudaMemcpyHostToDevice);
-    cudaMemcpy(&(ctx->bd), b, sizeof(OURBIGNUM), cudaMemcpyHostToDevice);
-    cudaMemset(&(ctx->rd), 0, sizeof(OURBIGNUM));
-    cudaMemset(ctx->buf, 0, sizeof(OURBIGNUM) * sizeof(OURBIGNUM));
+    cudaMemcpy((void*)(ctx->ad.data), a, sizeof(OURBIGNUM), cudaMemcpyHostToDevice);
+    cudaMemcpy((void*)(ctx->bd.data), b, sizeof(OURBIGNUM), cudaMemcpyHostToDevice);
+    cudaMemset((void*)(ctx->buf), 0, sizeof(OURBIGNUM) * sizeof(OURBIGNUM));
+
+    memset(r->data, 0, sizeof(OURBIGNUM));
 
     dim3 blockSize(16, 16);
     dim3 gridSize(8, 8);
@@ -38,8 +39,6 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OBN
             carry = product >> 8;
         }
     }
-
-    cudaMemcpy(r, &(ctx->buf3), sizeof(OURBIGNUM), cudaMemcpyHostToDevice);
 }
 
 __global__ void f_kernel(unsigned int **buf, const OURBIGNUM *ad, const OURBIGNUM *bd)
