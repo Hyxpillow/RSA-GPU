@@ -3,6 +3,7 @@
 #include "utils/config.h"
 #include "modexp/modexp_cpu_mont.h"
 #include "modexp/modexp_cpu.h"
+#include "modexp/modexp_mong_gpu.h"
 #include <vector>
 #include <openssl/bn.h>
 #include <string.h>
@@ -14,6 +15,7 @@ void do_rsa(const std::vector<BIGNUM*> &input_blocks,
 {
     
     auto start = std::chrono::steady_clock::now();
+    OBN_MUL_GPU_CTX *ctx = OBN_MUL_GPU_CTX_new();
     for (int i = 0; i < input_blocks.size(); i++) {
         OURBIGNUM *input_block_obn = OBN_new();
         OBN_bn2obn(input_block_obn, input_blocks[i]);
@@ -25,11 +27,12 @@ void do_rsa(const std::vector<BIGNUM*> &input_blocks,
         } else if (strcmp(processor, "cpu_mont") == 0) {
             mont_mod_exp(output_block_obn, input_block_obn, bn_config.E, bn_config);
         } else if (strcmp(processor, "gpu_mont") == 0) {
-            ;
+            gpu_mod_exp(output_block_obn, input_block_obn, bn_config.E, bn_config.N, ctx);
         }
         OBN_obn2bn(&output_block, output_block_obn);
         output_blocks.push_back(output_block);
     }
+    OBN_MUL_GPU_CTX_free(ctx);
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed = end - start;
     printf("Time taken: %.3f s\n", elapsed.count());
