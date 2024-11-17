@@ -13,7 +13,7 @@ void OBN_MUL_GPU_CTX_free(OBN_MUL_GPU_CTX* p)
     cudaFree(p);
 }
 
-__global__ void multiply_kernel(unsigned int **buf, const OURBIGNUM *ad, const OURBIGNUM *bd)
+__global__ void multiply_kernel(int **buf, const OURBIGNUM *ad, const OURBIGNUM *bd)
 {
     int xxx = 1 + blockIdx.x * blockDim.x + threadIdx.x;
     int yyy = 1 + blockIdx.y * blockDim.y + threadIdx.y;
