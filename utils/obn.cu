@@ -33,8 +33,10 @@ __global__ void split_int32_kernel(OBN_MUL_GPU_CTX* ctx)
     for (int i = idx; i < OBN_MAX_NUM_BYTES; i += gridDim.x * blockDim.x)
     {
         ctx->low8[i] = ctx->buf[i]  & 0xFF;
-        ctx->mid8[i] = (ctx->buf[i] >> 8) & 0xFF;
-        ctx->high8[i] = (ctx->buf[i] >> 16) & 0xFF;
+        if (i + 1 < OBN_MAX_NUM_BYTES)
+            ctx->mid8[i + 1] = (ctx->buf[i] >> 8) & 0xFF;
+        if (i + 2 < OBN_MAX_NUM_BYTES)
+            ctx->high8[i + 2] = (ctx->buf[i] >> 16) & 0xFF;
     }
 }
 
