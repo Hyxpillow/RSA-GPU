@@ -104,7 +104,7 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
     is_carry_all_zero<<<8, 32>>>(ctx);
     cudaDeviceSynchronize();
     cudaMemcpy(&carry_zero_flag, (void *)&(ctx->carry_zero_flag), sizeof(int), cudaMemcpyDeviceToHost);
-    while (ctx->carry_zero_flag)
+    while (carry_zero_flag)
     {
         cudaMemcpy((void *)(ctx->x), ctx->low8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
         cudaMemcpy((void *)(ctx->y), ctx->carry, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
