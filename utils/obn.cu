@@ -13,6 +13,20 @@ void OBN_MUL_GPU_CTX_free(OBN_MUL_GPU_CTX* p)
     cudaFree(p);
 }
 
+__global__ void multiply_kernel(unsigned int **buf, const OURBIGNUM *ad, const OURBIGNUM *bd)
+{
+    int xxx = 1 + blockIdx.x * blockDim.x + threadIdx.x;
+    int yyy = 1 + blockIdx.y * blockDim.y + threadIdx.y;
+
+    for(int i = xxx; i < sizeof(OURBIGNUM) - 1; i += gridDim.x * blockDim.x)
+    {
+        for(int j = yyy; j < sizeof(OURBIGNUM) - 1; j += gridDim.y * blockDim.y)
+        {
+            buf[i][j] = ad->data[i] * bd->data[j];
+        }
+    }
+}
+
 void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OBN_MUL_GPU_CTX *ctx)
 {
     cudaMemcpy((void*)(ctx->ad.data), a, sizeof(OURBIGNUM), cudaMemcpyHostToDevice);
@@ -23,7 +37,7 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OBN
 
     dim3 blockSize(16, 16);
     dim3 gridSize(8, 8);
-    f_kernel<<<gridSize, blockSize>>>(ctx->buf, &(ctx->ad), &(ctx->bd));
+    multiply_kernel<<<gridSize, blockSize>>>(ctx->buf, &(ctx->ad), &(ctx->bd));
 
     for (size_t i = 0; i < OBN_MAX_NUM_BYTES; ++i)
     {
@@ -32,25 +46,11 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, const OBN
         {
             unsigned int product =
                 r->data[i + j] +
-                buf[i][j]
+                ctx->buf[i][j] +
                 carry;
 
             r->data[i + j] = product & 0xFF;
             carry = product >> 8;
-        }
-    }
-}
-
-__global__ void f_kernel(unsigned int **buf, const OURBIGNUM *ad, const OURBIGNUM *bd)
-{
-    int xxx = 1 + blockIdx.x * blockDim.x + threadIdx.x;
-    int yyy = 1 + blockIdx.y * blockDim.y + threadIdx.y;
-
-    for(int i = xxx; i < N - 1; i += gridDim.x * blockDim.x)
-    {
-        for(int j = yyy; j < N - 1; j += gridDim.y * blockDim.y)
-        {
-            buf[i][j] = ad->data[i] * bd->data[j];
         }
     }
 }
