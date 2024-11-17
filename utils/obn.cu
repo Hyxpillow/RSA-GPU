@@ -42,7 +42,7 @@ __global__ void is_carry_all_zero(OBN_MUL_GPU_CTX* ctx)
 {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     for (int i = idx; i < OBN_MAX_NUM_BYTES; i += gridDim.x * blockDim.x)
-        if (ctx->carry[idx] != 0)
+        if (ctx->carry[i] != 0)
             ctx->carry_zero_flag = 1; 
 }
 
