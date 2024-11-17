@@ -35,10 +35,23 @@ void OBN_mask_bits(OURBIGNUM *a, int n);
 void OBN_one(OURBIGNUM *a);
 
 struct OBN_MUL_GPU_CTX {
-    OURBIGNUM rd;
-    OURBIGNUM ad;
-    OURBIGNUM bd;
-    int buf[OBN_MAX_NUM_BYTES][OBN_MAX_NUM_BYTES];
+    unsigned char a[OBN_MAX_NUM_BYTES];
+    unsigned char b[OBN_MAX_NUM_BYTES];
+
+    int buf[OBN_MAX_NUM_BYTES];
+
+    unsigned char low8[OBN_MAX_NUM_BYTES];
+    unsigned char mid8[OBN_MAX_NUM_BYTES];
+    unsigned char high8[OBN_MAX_NUM_BYTES];
+
+    unsigned char x[OBN_MAX_NUM_BYTES];
+    unsigned char y[OBN_MAX_NUM_BYTES];
+    unsigned char z[OBN_MAX_NUM_BYTES];
+    unsigned char carry[OBN_MAX_NUM_BYTES];
+
+    unsigned char result[OBN_MAX_NUM_BYTES];
+
+    int carry_zero_flag;
 };
 
 OBN_MUL_GPU_CTX* OBN_MUL_GPU_CTX_new();
