@@ -43,4 +43,4 @@ struct OBN_MUL_GPU_CTX {
 
 OBN_MUL_GPU_CTX* OBN_MUL_GPU_CTX_new();
 void OBN_MUL_GPU_CTX_free(OBN_MUL_GPU_CTX*);
-void OBN_mul_gpu(OURBIGNUM *rd, const OURBIGNUM *ad, const OURBIGNUM *bd, const OBN_MUL_GPU_CTX *ctx);
+void OBN_mul_gpu(OURBIGNUM *rd, const OURBIGNUM *ad, const OURBIGNUM *bd, OBN_MUL_GPU_CTX *ctx);
