@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 6)
     {
-        printf("Usage: program <encrypt|decrypt> <keyfile> <inputfile> <outputfile> <cpu|cpu_mont|gpu_mont>\n");
+        printf("Usage: program <encrypt|decrypt> <keyfile> <inputfile> <outputfile> <cpu|gpu>\n");
         return 1;
     }
     char *mode = argv[1];
