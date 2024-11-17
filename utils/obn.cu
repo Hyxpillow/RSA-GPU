@@ -65,8 +65,8 @@ __global__ void add_kernel(OBN_MUL_GPU_CTX* ctx)
 void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_GPU_CTX *ctx)
 {
     int buf[OBN_MAX_NUM_BYTES][OBN_MAX_NUM_BYTES];
-    cudaMemcpy((void *)(ctx->ad), a, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
-    cudaMemcpy((void *)(ctx->bd), b, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
+    cudaMemcpy((void *)(ctx->a), a, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
+    cudaMemcpy((void *)(ctx->b), b, OBN_MAX_NUM_BYTES, cudaMemcpyHostToDevice);
     cudaMemset((void *)(ctx->buf), 0, sizeof(int) * OBN_MAX_NUM_BYTES);
 
     dim3 blockSize(16, 16);
@@ -75,7 +75,7 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
     cudaDeviceSynchronize();
 
     // get base, carry8, carry16
-    split_int32_kernel<<<8, 32>>>split_int32_kernel(ctx);
+    split_int32_kernel<<<8, 32>>>(ctx);
     cudaDeviceSynchronize();
 
     // if carry8 != 0
