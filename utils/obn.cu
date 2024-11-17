@@ -41,6 +41,9 @@ __global__ void split_int32_kernel(OBN_MUL_GPU_CTX* ctx)
 __global__ void is_carry_all_zero(OBN_MUL_GPU_CTX* ctx)
 {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx == 0)
+        ctx->carry_zero_flag = 0;
+    
     for (int i = idx; i < OBN_MAX_NUM_BYTES; i += gridDim.x * blockDim.x)
         if (ctx->carry[i] != 0)
             ctx->carry_zero_flag = 1; 
