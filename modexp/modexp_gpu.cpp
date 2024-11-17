@@ -1,6 +1,6 @@
 #include "obn.h"
 
-void gpu_mod_exp(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m, OBN_MUL_GPU_CTX *ctx)
+void mod_exp_gpu(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m, OBN_MUL_GPU_CTX *ctx)
 {
     OBN_one(r);
     OURBIGNUM *xxx = OBN_new();
