@@ -13,14 +13,14 @@ void OBN_MUL_GPU_CTX_free(OBN_MUL_GPU_CTX* p)
     cudaFree(p);
 }
 
-__global__ void multiply_kernel(int **buf, const OURBIGNUM *ad, const OURBIGNUM *bd)
+__global__ void multiply_kernel(int buf[OBN_MAX_NUM_BYTES][OBN_MAX_NUM_BYTES], const OURBIGNUM *ad, const OURBIGNUM *bd)
 {
     int xxx = 1 + blockIdx.x * blockDim.x + threadIdx.x;
     int yyy = 1 + blockIdx.y * blockDim.y + threadIdx.y;
 
-    for(int i = xxx; i < sizeof(OURBIGNUM) - 1; i += gridDim.x * blockDim.x)
+    for(int i = xxx; i < OBN_MAX_NUM_BYTES - 1; i += gridDim.x * blockDim.x)
     {
-        for(int j = yyy; j < sizeof(OURBIGNUM) - 1; j += gridDim.y * blockDim.y)
+        for(int j = yyy; j < OBN_MAX_NUM_BYTES - 1; j += gridDim.y * blockDim.y)
         {
             buf[i][j] = ad->data[i] * bd->data[j];
         }
