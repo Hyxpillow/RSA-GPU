@@ -75,18 +75,23 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
 
     int carry_zero_flag;
 
-    dim3 blockSize(16, 16);
-    dim3 gridSize(8, 8);
+    int gridsize_2d = 4;
+    int gridsize_1d = gridsize_2d * gridsize_2d;
+    int blocksize_2d = 8;
+    int blocksize_1d = blocksize_2d * blocksize_2d;
+
+    dim3 blockSize(blocksize_2d, blocksize_2d);
+    dim3 gridSize(gridsize_2d, gridsize_2d);
     multiply_kernel<<<gridSize, blockSize>>>(ctx);
     cudaDeviceSynchronize();
 
     // get base, carry8, carry16
-    split_int32_kernel<<<8, 32>>>(ctx);
+    split_int32_kernel<<<gridsize_1d, blocksize_1d>>>(ctx);
     cudaDeviceSynchronize();
 
     // if carry8 != 0
     cudaMemcpy((void *)(ctx->carry), ctx->mid8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
-    is_carry_all_zero<<<8, 32>>>(ctx);
+    is_carry_all_zero<<<gridsize_1d, blocksize_1d>>>(ctx);
     cudaDeviceSynchronize();
     cudaMemcpy(&carry_zero_flag, (void *)&(ctx->carry_zero_flag), sizeof(int), cudaMemcpyDeviceToHost);
     while (carry_zero_flag)
@@ -94,19 +99,19 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
         cudaMemcpy((void *)(ctx->x), ctx->low8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
         cudaMemcpy((void *)(ctx->y), ctx->carry, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
 
-        add_kernel<<<8, 32>>>(ctx);
+        add_kernel<<<gridsize_1d, blocksize_1d>>>(ctx);
         cudaDeviceSynchronize();
 
         cudaMemcpy((void *)(ctx->low8), ctx->z, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
 
-        is_carry_all_zero<<<8, 32>>>(ctx);
+        is_carry_all_zero<<<gridsize_1d, blocksize_1d>>>(ctx);
         cudaDeviceSynchronize();
         cudaMemcpy(&carry_zero_flag, (void *)&(ctx->carry_zero_flag), sizeof(int), cudaMemcpyDeviceToHost);
     }
     
     // if carry16 != 0
     cudaMemcpy((void *)(ctx->carry), ctx->high8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
-    is_carry_all_zero<<<8, 32>>>(ctx);
+    is_carry_all_zero<<<gridsize_1d, blocksize_1d>>>(ctx);
     cudaDeviceSynchronize();
     cudaMemcpy(&carry_zero_flag, (void *)&(ctx->carry_zero_flag), sizeof(int), cudaMemcpyDeviceToHost);
     while (carry_zero_flag)
@@ -114,12 +119,12 @@ void OBN_mul_gpu(OURBIGNUM *r, const OURBIGNUM *a, const OURBIGNUM *b, OBN_MUL_G
         cudaMemcpy((void *)(ctx->x), ctx->low8, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
         cudaMemcpy((void *)(ctx->y), ctx->carry, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
 
-        add_kernel<<<8, 32>>>(ctx);
+        add_kernel<<<gridsize_1d, blocksize_1d>>>(ctx);
         cudaDeviceSynchronize();
 
         cudaMemcpy((void *)(ctx->low8), ctx->z, OBN_MAX_NUM_BYTES, cudaMemcpyDeviceToDevice);
 
-        is_carry_all_zero<<<8, 32>>>(ctx);
+        is_carry_all_zero<<<gridsize_1d, blocksize_1d>>>(ctx);
         cudaDeviceSynchronize();
         cudaMemcpy(&carry_zero_flag, (void *)&(ctx->carry_zero_flag), sizeof(int), cudaMemcpyDeviceToHost);
     }
