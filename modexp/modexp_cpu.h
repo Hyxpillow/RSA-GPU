@@ -1,4 +1,4 @@
 #pragma once
 #include "obn.h"
 
-void base_mod_exp(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m);
+void mod_exp_cpu(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m);

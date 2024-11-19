@@ -49,8 +49,6 @@ struct OBN_MUL_GPU_CTX {
     unsigned char z[OBN_MAX_NUM_BYTES];
     unsigned char carry[OBN_MAX_NUM_BYTES];
 
-    unsigned char result[OBN_MAX_NUM_BYTES];
-
     int carry_zero_flag;
 };
 

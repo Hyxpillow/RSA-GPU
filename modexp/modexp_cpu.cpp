@@ -1,6 +1,6 @@
 #include "modexp_cpu.h"
 
-void base_mod_exp(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m)
+void mod_exp_cpu(OURBIGNUM* r, const OURBIGNUM* a, const OURBIGNUM* p, const OURBIGNUM* m)
 {
     OBN_one(r);
     OURBIGNUM *xxx = OBN_new();
