@@ -16,3 +16,8 @@ Run Decryption with given Private Key:
 Generate your own Private Key:
     openssl genrsa -out private.pem 512
     openssl pkey -in private.pem -pubout -out public.pem
+
+Transform pkcs1 to pkcs8 (No need on cuda2)
+```
+openssl pkcs8 -topk8 -in private.pem -out private2.pem -nocrypt
+```
