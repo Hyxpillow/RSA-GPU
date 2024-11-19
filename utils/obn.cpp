@@ -59,29 +59,29 @@ void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM 
     if (dv)
         memset(dv->data, 0, OBN_MAX_NUM_BYTES);
     memcpy(rem->data, m->data, OBN_MAX_NUM_BYTES);
-    // 获取被除数的实际位数（去除前导零）
+     
     int m_bits = OBN_MAX_NUM_BYTES * 8;
     while (m_bits > 0 && ((rem->data[(m_bits - 1) / 8] >> ((m_bits - 1) % 8)) & 1) == 0) {
         m_bits--;
     }
-    // 获取除数的实际位数（去除前导零）
+     
     int d_bits = OBN_MAX_NUM_BYTES * 8;
     while (d_bits > 0 && ((d->data[(d_bits - 1) / 8] >> ((d_bits - 1) % 8)) & 1) == 0) {
         d_bits--;
     }
 
-    // 如果被除数的位数小于除数，直接返回余数为被除数，商为0
+     
     if (m_bits < d_bits) {
         return;
     }
 
     int shift = m_bits - d_bits;
 
-    // 临时变量用于保存当前的除数（需要左移）
+     
     OURBIGNUM temp_d;
     memset(temp_d.data, 0, OBN_MAX_NUM_BYTES);
 
-    // 将除数左移以对齐被除数的最高位
+     
     for (int i = d_bits - 1; i >= 0; --i) {
         if ((d->data[i / 8] >> (i % 8)) & 1) {
             int bit_pos = i + shift;
@@ -89,9 +89,9 @@ void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM 
         }
     }
 
-    // 逐位计算商，从最高位到最低位
+     
     for (int i = shift; i >= 0; --i) {
-        // 检查余数是否大于等于当前的除数
+         
         int greater_or_equal = 1;
         for (int j = OBN_MAX_NUM_BYTES - 1; j >= 0; --j) {
             if (rem->data[j] > temp_d.data[j]) {
@@ -103,7 +103,7 @@ void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM 
             }
         }
 
-        // 如果余数大于等于当前的除数，则进行减法，并将商的对应位设为1
+         
         if (greater_or_equal) {
             unsigned int borrow = 0;
             for (int j = 0; j < OBN_MAX_NUM_BYTES; ++j) {
@@ -115,7 +115,7 @@ void OBN_div(OURBIGNUM *dv, OURBIGNUM *rem, const OURBIGNUM *m, const OURBIGNUM 
                 dv->data[i / 8] |= (1 << (i % 8));
         }
 
-        // 将除数右移一位，准备处理下一位
+         
         for (int j = 0; j < OBN_MAX_NUM_BYTES - 1; ++j) {
             temp_d.data[j] = (temp_d.data[j] >> 1) | ((temp_d.data[j + 1] & 1) << 7);
         }
@@ -198,7 +198,7 @@ void OBN_hex2obn(OURBIGNUM *a, const char *str)
         } else if (c >= 'A' && c <= 'F') {
             value = c - 'A' + 10;
         } else {
-            // 非法字符，忽略
+             
             continue;
         }
 
@@ -231,7 +231,7 @@ void OBN_obn2hex(const OURBIGNUM *a, char *str)
     }
 
     if (leading_zero) {
-        // 如果整个数是零
+         
         str[index++] = '0';
     }
 
@@ -272,13 +272,13 @@ void OBN_mask_bits(OURBIGNUM *a, int n)
     int byte_index = n / 8;
     int bit_index = n % 8;
 
-    // Mask the bits in the byte at byte_index
+     
     if (bit_index != 0) {
         a->data[byte_index] &= (1 << bit_index) - 1;
         byte_index++;
     }
 
-    // Set all bytes after byte_index to 0
+     
     for (int i = byte_index; i < OBN_MAX_NUM_BYTES; ++i) {
         a->data[i] = 0;
     }
